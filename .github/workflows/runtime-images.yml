@@ -1,0 +1,68 @@
+on:
+  schedule:
+    - cron: "0 0 * * */7" # This should run every hour
+  workflow_dispatch:
+  workflow_call:
+
+name: Runtime Images
+
+jobs:
+  build-images:
+    name: Build & push images
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        runtime:
+          - name: freedesktop-22.08
+            packages: org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08
+            remote: flathub
+
+          - name: freedesktop-23.08
+            packages: org.freedesktop.Platform//23.08 org.freedesktop.Sdk//23.08
+            remote: flathub
+
+          - name: kde-6.5
+            packages: org.kde.Platform//6.5 org.kde.Sdk//6.5
+            remote: flathub
+
+          - name: kde-6.6
+            packages: org.kde.Platform//6.6 org.kde.Sdk//6.6
+            remote: flathub
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+          platforms: linux/amd64
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Write the Dockerfile for the ${{ matrix.runtime.name }} runtime
+        run: |
+          cat >> ${{ matrix.runtime.name }}.Dockerfile << EOF
+          # syntax = docker/dockerfile:experimental
+          FROM ghcr.io/${{ github.repository_owner }}/flatpak-github-actions:base-x86_64
+
+          RUN --security=insecure flatpak install -y --noninteractive ${{matrix.runtime.remote}} ${{ matrix.runtime.packages }}
+
+      - name: Build & push the ${{ matrix.runtime.name }} image to GHCR
+        uses: docker/build-push-action@v5
+        with:
+          allow: security.insecure
+          context: .
+          file: ${{ matrix.runtime.name }}.Dockerfile
+          push: true
+          # Avoids making the pushed image appear as three images, also seems to avoid adding the unknown/unknown platform
+          # https://github.com/docker/build-push-action/issues/755#issuecomment-1398996997
+          provenance: false
+          tags: ghcr.io/${{ github.repository_owner }}/flatpak-github-actions:${{ matrix.runtime.name }}-x86_64

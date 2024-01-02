@@ -81,3 +81,8 @@ jobs:
           registry: ghcr.io/${{ github.repository_owner }}
           username: ${{ github.actor }}
           password: ${{ github.token }}
+
+  runtime-images:
+    name: Build & push runtime images
+    needs: buildstream
+    uses: ./.github/workflows/runtime-images.yml
