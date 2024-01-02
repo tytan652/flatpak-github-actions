@@ -9,7 +9,7 @@ jobs:
     name: Flatpak Builder
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-44
+      image: ghcr.io/tytan652/flatpak-github-actions:base-x86_64
       options: --privileged
     strategy:
       fail-fast: false
@@ -26,15 +26,8 @@ jobs:
             restore: cache-restored
     steps:
       - uses: actions/checkout@v4
-      - name: Install QEMU deps
+      - uses: ./update-binfmts
         if: ${{ matrix.arch != 'x86_64' }}
-        run: |
-          dnf -y install docker
-      - name: Set up QEMU
-        if: ${{ matrix.arch != 'x86_64' }}
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: arm64
       - uses: ./flatpak-builder
         with:
           bundle: org.example.MyApp.Devel-${{ matrix.cache }}-${{ matrix.restore }}.flatpak
@@ -55,7 +48,7 @@ jobs:
     name: Flatpak Builder Stop At
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-44
+      image: ghcr.io/tytan652/flatpak-github-actions:base-x86_64
       options: --privileged
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: flatpak-builder
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-44
+      image: ghcr.io/tytan652/flatpak-github-actions:base-x86_64
       options: --privileged
     steps:
       - uses: actions/checkout@v4
