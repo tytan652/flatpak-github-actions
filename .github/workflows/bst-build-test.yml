@@ -11,6 +11,7 @@ on:
       - 'buildstream/**'
     branches-ignore:
       - master
+      - freedesktop_based_image_test
 
 name: BuildStream Build Test
 jobs:

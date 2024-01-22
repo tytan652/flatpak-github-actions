@@ -5,6 +5,7 @@ on:
       - 'buildstream/**'
     branches:
       - master
+      - freedesktop_based_image_test
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.head_ref || github.ref }}'
   cancel-in-progress: true
