@@ -1,0 +1,34 @@
+on:
+  push:
+  pull_request:
+
+name: Tests
+jobs:
+  build-step-by-step:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Add remotes
+        uses: ./flatpak-builder/add-remotes
+        with:
+          verbose: true
+          remotes: |
+            flathub https://flathub.org/repo/flathub.flatpakrepo
+            flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+
+  build-full:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./flatpak-builder
+        with:
+          verbose: true
+          remotes: |
+            flathub https://flathub.org/repo/flathub.flatpakrepo
+            flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
