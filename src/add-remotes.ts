@@ -29,7 +29,9 @@ class Config implements AddRemotesConfig {
   }
 }
 
-const run = async (config: Config): Promise<void> => {
+const run = async (): Promise<void> => {
+  const config = new Config()
+
   await stages.checkPrerequisites(config)
 
   await stages.addRemotes(config)
@@ -38,6 +40,6 @@ const run = async (config: Config): Promise<void> => {
 }
 
 // eslint-disable-next-line github/no-then
-run(new Config()).catch((e: Error) => {
+run().catch((e: Error) => {
   core.setFailed(e.message)
 })

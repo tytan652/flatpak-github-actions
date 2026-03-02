@@ -71,12 +71,13 @@ class Config {
         core.setOutput('verbose', this.verbose);
     }
 }
-const run = (config) => __awaiter(void 0, void 0, void 0, function* () {
+const run = () => __awaiter(void 0, void 0, void 0, function* () {
+    const config = new Config();
     yield stages.checkPrerequisites(config);
     yield stages.addRemotes(config);
     config.generateOutput();
 });
-run(new Config()).catch((e) => {
+run().catch((e) => {
     core.setFailed(e.message);
 });
 

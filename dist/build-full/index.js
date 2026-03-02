@@ -68,7 +68,8 @@ class Config {
         }
     }
 }
-const run = (config) => __awaiter(void 0, void 0, void 0, function* () {
+const run = () => __awaiter(void 0, void 0, void 0, function* () {
+    const config = new Config();
     yield stages.checkPrerequisites(config);
     if (config.remotes) {
         yield core.group('Add remotes', () => __awaiter(void 0, void 0, void 0, function* () {
@@ -76,7 +77,7 @@ const run = (config) => __awaiter(void 0, void 0, void 0, function* () {
         }));
     }
 });
-run(new Config()).catch((e) => {
+run().catch((e) => {
     core.setFailed(e.message);
 });
 
