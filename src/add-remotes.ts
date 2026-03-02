@@ -6,21 +6,22 @@ import { AddRemotesConfig, Remotes } from './stages'
 class Config implements AddRemotesConfig {
   verbose: boolean
 
-  remotes: Remotes[] | undefined
+  remotes: Remotes[]
 
   constructor() {
     this.verbose = core.getBooleanInput('verbose')
 
-    const remotes = core.getMultilineInput('remotes') || undefined
-    if (remotes) {
-      this.remotes = []
-      for (const remote of remotes) {
-        const remoteSplit: string[] = remote.split(' ')
+    const remotes = core.getMultilineInput('remotes', { required: true })
+    if (!remotes.length) throw Error('Malformed supplied input: remotes')
 
-        this.remotes.push(new Remotes(remoteSplit[0], remoteSplit[1]))
-      }
-    } else {
-      throw Error('No remote provided')
+    this.remotes = []
+    for (const remote of remotes) {
+      const remoteSplit: string[] = remote.split(' ')
+
+      if (remoteSplit.length !== 2)
+        throw Error(`Malformed name-URL remote pair: ${remote}`)
+
+      this.remotes.push(new Remotes(remoteSplit[0], remoteSplit[1]))
     }
   }
 

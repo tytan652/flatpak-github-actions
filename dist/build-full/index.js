@@ -57,9 +57,13 @@ class Config {
         this.verbose = core.getBooleanInput('verbose');
         const remotes = core.getMultilineInput('remotes') || undefined;
         if (remotes) {
+            if (!remotes.length)
+                throw Error('Malformed supplied input: remotes');
             this.remotes = [];
             for (const remote of remotes) {
                 const remoteSplit = remote.split(' ');
+                if (remoteSplit.length !== 2)
+                    throw Error(`Malformed name-URL remote pair: ${remote}`);
                 this.remotes.push(new stages_1.Remotes(remoteSplit[0], remoteSplit[1]));
             }
         }

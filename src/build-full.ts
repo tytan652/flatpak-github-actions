@@ -13,9 +13,14 @@ class Config implements AddRemotesConfig {
 
     const remotes = core.getMultilineInput('remotes') || undefined
     if (remotes) {
+      if (!remotes.length) throw Error('Malformed supplied input: remotes')
+
       this.remotes = []
       for (const remote of remotes) {
         const remoteSplit: string[] = remote.split(' ')
+
+        if (remoteSplit.length !== 2)
+          throw Error(`Malformed name-URL remote pair: ${remote}`)
 
         this.remotes.push(new Remotes(remoteSplit[0], remoteSplit[1]))
       }

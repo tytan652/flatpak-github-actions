@@ -55,16 +55,15 @@ const stages_1 = __nccwpck_require__(9761);
 class Config {
     constructor() {
         this.verbose = core.getBooleanInput('verbose');
-        const remotes = core.getMultilineInput('remotes') || undefined;
-        if (remotes) {
-            this.remotes = [];
-            for (const remote of remotes) {
-                const remoteSplit = remote.split(' ');
-                this.remotes.push(new stages_1.Remotes(remoteSplit[0], remoteSplit[1]));
-            }
-        }
-        else {
-            throw Error('No remote provided');
+        const remotes = core.getMultilineInput('remotes', { required: true });
+        if (!remotes.length)
+            throw Error('Malformed supplied input: remotes');
+        this.remotes = [];
+        for (const remote of remotes) {
+            const remoteSplit = remote.split(' ');
+            if (remoteSplit.length !== 2)
+                throw Error(`Malformed name-URL remote pair: ${remote}`);
+            this.remotes.push(new stages_1.Remotes(remoteSplit[0], remoteSplit[1]));
         }
     }
     generateOutput() {
