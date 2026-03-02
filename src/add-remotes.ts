@@ -37,6 +37,7 @@ const run = async (config: Config): Promise<void> => {
   config.generateOutput()
 }
 
+// eslint-disable-next-line github/no-then
 run(new Config()).catch((e: Error) => {
   core.setFailed(e.message)
 })
