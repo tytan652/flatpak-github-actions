@@ -151,7 +151,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
+exports.downloadSources = exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const exec = __importStar(__nccwpck_require__(5236));
 const io = __importStar(__nccwpck_require__(4994));
@@ -210,6 +210,10 @@ const installDependencies = (config) => __awaiter(void 0, void 0, void 0, functi
     yield runFlatpakBuilderWithFakeBuildDir(args, config);
 });
 exports.installDependencies = installDependencies;
+const downloadSources = (config) => __awaiter(void 0, void 0, void 0, function* () {
+    yield runFlatpakBuilderWithFakeBuildDir(['--download-only'], config);
+});
+exports.downloadSources = downloadSources;
 
 
 /***/ }),

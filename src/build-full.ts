@@ -1,11 +1,18 @@
 import * as core from '@actions/core'
 
 import * as stages from './stages'
-import { AddRemotesConfig, InstallDependenciesConfig, Remotes } from './stages'
+import {
+  AddRemotesConfig,
+  DownloadSourcesConfig,
+  InstallDependenciesConfig,
+  Remotes
+} from './stages'
 
 import { defaultStateDir } from './constants'
 
-class Config implements AddRemotesConfig, InstallDependenciesConfig {
+class Config
+  implements AddRemotesConfig, InstallDependenciesConfig, DownloadSourcesConfig
+{
   verbose: boolean
 
   remotes: stages.Remotes[] | undefined
@@ -66,6 +73,10 @@ const run = async (): Promise<void> => {
       await stages.installDependencies(config)
     })
   }
+
+  await core.group('Download sources', async () => {
+    await stages.downloadSources(config)
+  })
 
   config.generateOutput()
 }

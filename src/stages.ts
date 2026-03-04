@@ -104,3 +104,12 @@ export const installDependencies = async (
 
   await runFlatpakBuilderWithFakeBuildDir(args, config)
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface DownloadSourcesConfig extends BuilderCommonConfig {}
+
+export const downloadSources = async (
+  config: DownloadSourcesConfig
+): Promise<void> => {
+  await runFlatpakBuilderWithFakeBuildDir(['--download-only'], config)
+}

@@ -37,6 +37,19 @@ jobs:
         with:
           state-dir: ${{ steps.install_deps.outputs.state-dir }}
 
+      - name: Download sources
+        id: download_sources
+        uses: ./flatpak-builder/download-sources
+        with:
+          verbose: ${{ steps.install_deps.outputs.verbose }}
+          state-dir: ${{ steps.install_deps.outputs.state-dir }}
+          manifest-path: ${{ steps.install_deps.outputs.manifest-path }}
+
+      - name: Check state directory (${{ steps.download_sources.outputs.state-dir }})
+        uses: ./.github/actions/test-check-state-dir
+        with:
+          state-dir: ${{ steps.download_sources.outputs.state-dir }}
+
   build-full:
     runs-on: ubuntu-latest
     container:

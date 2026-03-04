@@ -1,0 +1,29 @@
+name: "Flatpak Download Sources"
+description: "Download sources from a Flatpak manifest"
+inputs:
+  verbose:
+    description: "Enable verbosity"
+    default: "false"
+  arch:
+    description: |
+      Specify the machine architecture to build for (e.g. x86_64, aarch64).
+      If no architecture is specified, the host architecture will be automatically detected.
+    required: false
+  state-dir:
+    description: "Use this directory for storing state (downloads, build dirs, build cache, etc) rather than the internal default (.flatpak-builder)"
+    required: false
+  manifest-path:
+    description: "Path to the Flatpak manifest"
+    required: true
+outputs:
+  verbose:
+    description: "Verbosity state given as input"
+  arch:
+    description: "Machine architecture specified as input"
+  state-dir:
+    description: "State directory used"
+  manifest-path:
+    description: "Path to the Flatpak manifest given as input"
+runs:
+  using: "node24"
+  main: "../../dist/download-sources/index.js"
