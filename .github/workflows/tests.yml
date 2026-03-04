@@ -3,11 +3,16 @@ on:
   pull_request:
 
 name: Tests
+env:
+  # NOTE: Flathub Beta is added just to have two remotes
+  REMOTES: |
+    flathub https://flathub.org/repo/flathub.flatpakrepo
+    flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
 jobs:
   build-step-by-step:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
     steps:
       - uses: actions/checkout@v6
 
@@ -15,20 +20,16 @@ jobs:
         uses: ./flatpak-builder/add-remotes
         with:
           verbose: true
-          remotes: |
-            flathub https://flathub.org/repo/flathub.flatpakrepo
-            flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+          remotes: ${{ env.REMOTES }}
 
   build-full:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
     steps:
       - uses: actions/checkout@v6
 
       - uses: ./flatpak-builder
         with:
           verbose: true
-          remotes: |
-            flathub https://flathub.org/repo/flathub.flatpakrepo
-            flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+          remotes: ${{ env.REMOTES }}
