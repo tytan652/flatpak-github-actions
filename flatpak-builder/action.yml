@@ -10,6 +10,20 @@ inputs:
       Members of the pair is separated with a space.
       Check the readme for an example.
     required: true
+  arch:
+    description: |
+      Specify the machine architecture to build for (e.g. x86_64, aarch64).
+      If no architecture is specified, the host architecture will be automatically detected.
+    required: false
+  state-dir:
+    description: "Use this directory for storing state (downloads, build dirs, build cache, etc) rather than the internal default (.flatpak-builder)"
+    required: false
+  manifest-path:
+    description: "Path to the Flatpak manifest to build"
+    required: true
+outputs:
+  state-dir:
+    description: "State directory used"
 runs:
   using: "node24"
   main: "../dist/build-full/index.js"

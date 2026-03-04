@@ -4,14 +4,15 @@
   "main": "dist/add-remotes/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --removeComments && ncc build lib/add-remotes.js -o dist/add-remotes && ncc build lib/build-full.js -o dist/build-full",
+    "build": "tsc --removeComments && ncc build lib/add-remotes.js -o dist/add-remotes && ncc build lib/install-deps.js -o dist/install-deps && ncc build lib/build-full.js -o dist/build-full",
     "format": "prettier --cache --cache-location node_modules/.cache/prettier/cache --write src/**/*.ts",
     "format-check": "prettier --cache --cache-location node_modules/.cache/prettier/cache --check src/**/*.ts",
     "lint": "eslint --cache --cache-strategy content --cache-location node_modules/.cache/eslint/cache src/**/*.ts"
   },
   "dependencies": {
     "@actions/core": "^2.0.3",
-    "@actions/exec": "^2.0.0"
+    "@actions/exec": "^2.0.0",
+    "@actions/io": "^2.0.0"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",

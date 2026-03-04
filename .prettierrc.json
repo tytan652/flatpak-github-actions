@@ -7,7 +7,7 @@
   "arrowParens": "avoid",
   "parser": "typescript",
   "plugins": ["@trivago/prettier-plugin-sort-imports"],
-  "importOrder": ["^@actions/(.*)$", "<BUILTIN_MODULES>", "<THIRD_PARTY_MODULES>", "^[./]"],
+  "importOrder": ["^@actions/(.*)$", "<BUILTIN_MODULES>", "<THIRD_PARTY_MODULES>", "^./stages$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true
 }

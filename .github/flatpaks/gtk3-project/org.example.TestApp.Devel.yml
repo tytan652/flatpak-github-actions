@@ -1,0 +1,14 @@
+app-id: "org.example.TestApp.Devel"
+runtime: "org.freedesktop.Platform"
+runtime-version: "25.08"
+sdk: "org.freedesktop.Sdk"
+command: "test-app"
+finish-args:
+  - "--device=dri"
+  - "--socket=wayland"
+modules:
+  - name: "test-app"
+    buildsystem: "meson"
+    sources:
+      - type: "dir"
+        path: "."

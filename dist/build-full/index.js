@@ -52,24 +52,34 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const stages = __importStar(__nccwpck_require__(9761));
 const stages_1 = __nccwpck_require__(9761);
+const constants_1 = __nccwpck_require__(8729);
 class Config {
     constructor() {
         this.verbose = core.getBooleanInput('verbose');
+        this.arch = core.getInput('arch') || undefined;
+        this.stateDir = core.getInput('state-dir') || constants_1.defaultStateDir;
+        this.manifestPath = core.getInput('manifest-path', { required: true });
         const remotes = core.getMultilineInput('remotes') || undefined;
         if (remotes) {
             if (!remotes.length)
                 throw Error('Malformed supplied input: remotes');
             this.remotes = [];
+            this.installDepsFrom = [];
             for (const remote of remotes) {
                 const remoteSplit = remote.split(' ');
                 if (remoteSplit.length !== 2)
                     throw Error(`Malformed name-URL remote pair: ${remote}`);
                 this.remotes.push(new stages_1.Remotes(remoteSplit[0], remoteSplit[1]));
+                this.installDepsFrom.push(remoteSplit[0]);
             }
         }
         else {
             this.remotes = undefined;
+            this.installDepsFrom = undefined;
         }
+    }
+    generateOutput() {
+        core.setOutput('state-dir', this.stateDir);
     }
 }
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -80,6 +90,12 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
             yield stages.addRemotes(config);
         }));
     }
+    if (config.installDepsFrom) {
+        yield core.group('Install dependencies', () => __awaiter(void 0, void 0, void 0, function* () {
+            yield stages.installDependencies(config);
+        }));
+    }
+    config.generateOutput();
 });
 run().catch((e) => {
     core.setFailed(e.message);
@@ -94,8 +110,11 @@ run().catch((e) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.flatpakCmd = void 0;
+exports.defaultBuildDir = exports.defaultStateDir = exports.flatpakCmd = exports.flatpakBuilderCmd = void 0;
+exports.flatpakBuilderCmd = 'flatpak-builder';
 exports.flatpakCmd = 'flatpak';
+exports.defaultStateDir = '.flatpak-builder';
+exports.defaultBuildDir = 'builddir';
 
 
 /***/ }),
@@ -148,15 +167,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
+exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const exec = __importStar(__nccwpck_require__(5236));
+const io = __importStar(__nccwpck_require__(4994));
 const constants_1 = __nccwpck_require__(8729);
 const checkPrerequisites = (config) => __awaiter(void 0, void 0, void 0, function* () {
     if (config.verbose)
         core.startGroup('Check pre-requisites');
     if (yield exec.exec(constants_1.flatpakCmd, ['--version'], { silent: !config.verbose }))
         throw Error('Failed to retrieve flatpak version');
+    if (yield exec.exec(constants_1.flatpakBuilderCmd, ['--version'], {
+        silent: !config.verbose
+    }))
+        throw Error('Failed to retrieve flatpak-builder version');
     if (config.verbose)
         core.endGroup();
 });
@@ -180,6 +204,28 @@ const addRemotes = (config) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.addRemotes = addRemotes;
+const runFlatpakBuilderWithFakeBuildDir = (args, config) => __awaiter(void 0, void 0, void 0, function* () {
+    const fakeBuildDir = `${config.stateDir}/${constants_1.defaultBuildDir}`;
+    args.push('--assumeyes', `--state-dir=${config.stateDir}`);
+    if (config.verbose)
+        args.push('--verbose');
+    if (config.arch)
+        args.push(`--arch${config.arch}`);
+    args.push(fakeBuildDir, config.manifestPath);
+    yield exec.exec(constants_1.flatpakBuilderCmd, args);
+    yield io.rmRF(`${config.stateDir}/ccache`);
+    yield io.rmRF(fakeBuildDir);
+});
+const installDependencies = (config) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!config.installDepsFrom)
+        return;
+    const args = ['--install-deps-only'];
+    for (const remote of config.installDepsFrom) {
+        args.push(`--install-deps-from=${remote}`);
+    }
+    yield runFlatpakBuilderWithFakeBuildDir(args, config);
+});
+exports.installDependencies = installDependencies;
 
 
 /***/ }),

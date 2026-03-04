@@ -22,3 +22,11 @@ This action enables adding Flatpak repos
 Most of the outputs are meant to be used by other `flatpak-builder` step actions
 
 - `verbose` - Verbosity state given as input
+- `remotes-names` - Name list of the Flatpak remotes given as input
+  
+  Example:
+  ```
+  flathub
+  flathub-beta
+  gnome-nightly
+  ```

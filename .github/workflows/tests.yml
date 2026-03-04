@@ -8,6 +8,7 @@ env:
   REMOTES: |
     flathub https://flathub.org/repo/flathub.flatpakrepo
     flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
+  MANIFEST_PATH: ./.github/flatpaks/gtk3-project/org.example.TestApp.Devel.yml
 jobs:
   build-step-by-step:
     runs-on: ubuntu-latest
@@ -17,10 +18,24 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Add remotes
+        id: add_remotes
         uses: ./flatpak-builder/add-remotes
         with:
           verbose: true
           remotes: ${{ env.REMOTES }}
+
+      - name: Install dependencies
+        id: install_deps
+        uses: ./flatpak-builder/install-deps
+        with:
+          verbose: ${{ steps.add_remotes.outputs.verbose }}
+          install-deps-from: ${{ steps.add_remotes.outputs.remotes-names }}
+          manifest-path: ${{ env.MANIFEST_PATH }}
+
+      - name: Check state directory (${{ steps.install_deps.outputs.state-dir }})
+        uses: ./.github/actions/test-check-state-dir
+        with:
+          state-dir: ${{ steps.install_deps.outputs.state-dir }}
 
   build-full:
     runs-on: ubuntu-latest
@@ -33,3 +48,4 @@ jobs:
         with:
           verbose: true
           remotes: ${{ env.REMOTES }}
+          manifest-path: ${{ env.MANIFEST_PATH }}

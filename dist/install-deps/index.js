@@ -1,7 +1,22 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 869:
+/***/ 8729:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.defaultBuildDir = exports.defaultStateDir = exports.flatpakCmd = exports.flatpakBuilderCmd = void 0;
+exports.flatpakBuilderCmd = 'flatpak-builder';
+exports.flatpakCmd = 'flatpak';
+exports.defaultStateDir = '.flatpak-builder';
+exports.defaultBuildDir = 'builddir';
+
+
+/***/ }),
+
+/***/ 4210:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -51,54 +66,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(7484));
 const stages = __importStar(__nccwpck_require__(9761));
-const stages_1 = __nccwpck_require__(9761);
+const constants_1 = __nccwpck_require__(8729);
 class Config {
     constructor() {
         this.verbose = core.getBooleanInput('verbose');
-        const remotes = core.getMultilineInput('remotes', { required: true });
-        if (!remotes.length)
-            throw Error('Malformed supplied input: remotes');
-        this.remotes = [];
-        for (const remote of remotes) {
-            const remoteSplit = remote.split(' ');
-            if (remoteSplit.length !== 2)
-                throw Error(`Malformed name-URL remote pair: ${remote}`);
-            this.remotes.push(new stages_1.Remotes(remoteSplit[0], remoteSplit[1]));
-        }
+        this.arch = core.getInput('arch') || undefined;
+        this.installDepsFrom = core.getMultilineInput('install-deps-from', {
+            required: true
+        });
+        if (!this.installDepsFrom.length)
+            throw Error('Malformed supplied input: install-deps-from');
+        this.stateDir = core.getInput('state-dir') || constants_1.defaultStateDir;
+        this.manifestPath = core.getInput('manifest-path', { required: true });
     }
     generateOutput() {
         core.setOutput('verbose', this.verbose);
-        const remotes = [];
-        for (const remote of this.remotes) {
-            remotes.push(remote.name);
-        }
-        core.setOutput('remotes-names', `${remotes.join('\n')}`);
+        core.setOutput('arch', this.arch);
+        core.setOutput('state-dir', this.stateDir);
+        core.setOutput('manifest-path', this.manifestPath);
     }
 }
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     const config = new Config();
     yield stages.checkPrerequisites(config);
-    yield stages.addRemotes(config);
+    yield stages.installDependencies(config);
     config.generateOutput();
 });
 run().catch((e) => {
     core.setFailed(e.message);
 });
-
-
-/***/ }),
-
-/***/ 8729:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.defaultBuildDir = exports.defaultStateDir = exports.flatpakCmd = exports.flatpakBuilderCmd = void 0;
-exports.flatpakBuilderCmd = 'flatpak-builder';
-exports.flatpakCmd = 'flatpak';
-exports.defaultStateDir = '.flatpak-builder';
-exports.defaultBuildDir = 'builddir';
 
 
 /***/ }),
@@ -31657,7 +31653,7 @@ module.exports = require("util");
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(869);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(4210);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()

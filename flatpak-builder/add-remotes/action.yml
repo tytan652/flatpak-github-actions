@@ -7,12 +7,16 @@ inputs:
   remotes:
     description: |
       A list of name-URL pairs of Flatpak remotes to add.
-      Members of the pair is separated with a space ` `.
+      Members of the pair is separated with a space.
       Check the readme for an example.
     required: true
 outputs:
   verbose:
     description: "Verbosity state given as input"
+  remotes-names:
+    description: |
+      Name list of the Flatpak remotes given as input.
+      Check the readme for an example.
 runs:
   using: "node24"
   main: "../../dist/add-remotes/index.js"

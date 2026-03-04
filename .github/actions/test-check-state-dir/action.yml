@@ -1,0 +1,23 @@
+name: Check state directory
+description: "A few checks for the test workflow"
+inputs:
+  state-dir:
+    description: "Directory to check"
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check directory
+      shell: bash
+      run: |
+        echo "::group::Show directory content"
+        find ${{ inputs.state-dir }}
+        echo "::endgroup::"
+
+        echo "::group::Assertion tests"
+        echo "::info::Check for ccache directory"
+        if [[ -d '${{ inputs.state-dir }}/ccache' ]]; then
+          echo "::error::State directory has a ccache directory which should not be"
+          exit 2
+        fi
+        echo "::endgroup::"

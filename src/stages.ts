@@ -1,10 +1,20 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
+import * as io from '@actions/io'
 
-import { flatpakCmd } from './constants'
+import { defaultBuildDir, flatpakBuilderCmd, flatpakCmd } from './constants'
 
 interface VerboseConfig {
   verbose: boolean
+}
+
+interface ArchConfig {
+  arch: string | undefined
+}
+
+interface BuilderCommonConfig extends VerboseConfig, ArchConfig {
+  stateDir: string
+  manifestPath: string
 }
 
 export const checkPrerequisites = async (
@@ -14,6 +24,13 @@ export const checkPrerequisites = async (
 
   if (await exec.exec(flatpakCmd, ['--version'], { silent: !config.verbose }))
     throw Error('Failed to retrieve flatpak version')
+
+  if (
+    await exec.exec(flatpakBuilderCmd, ['--version'], {
+      silent: !config.verbose
+    })
+  )
+    throw Error('Failed to retrieve flatpak-builder version')
 
   if (config.verbose) core.endGroup()
 }
@@ -44,4 +61,46 @@ export const addRemotes = async (config: AddRemotesConfig): Promise<void> => {
 
     await exec.exec(flatpakCmd, args)
   }
+}
+
+const runFlatpakBuilderWithFakeBuildDir = async (
+  args: string[],
+  config: BuilderCommonConfig
+): Promise<void> => {
+  const fakeBuildDir = `${config.stateDir}/${defaultBuildDir}`
+
+  args.push('--assumeyes', `--state-dir=${config.stateDir}`)
+
+  if (config.verbose) args.push('--verbose')
+
+  if (config.arch) args.push(`--arch${config.arch}`)
+
+  // NOTE: Build dir is required but is not created
+  args.push(fakeBuildDir, config.manifestPath)
+
+  await exec.exec(flatpakBuilderCmd, args)
+
+  // Remove ccache state
+  await io.rmRF(`${config.stateDir}/ccache`)
+
+  // Remove non-existant build dir just in case
+  await io.rmRF(fakeBuildDir)
+}
+
+export interface InstallDependenciesConfig extends BuilderCommonConfig {
+  installDepsFrom: string[] | undefined
+}
+
+export const installDependencies = async (
+  config: InstallDependenciesConfig
+): Promise<void> => {
+  if (!config.installDepsFrom) return
+
+  const args: string[] = ['--install-deps-only']
+
+  for (const remote of config.installDepsFrom) {
+    args.push(`--install-deps-from=${remote}`)
+  }
+
+  await runFlatpakBuilderWithFakeBuildDir(args, config)
 }

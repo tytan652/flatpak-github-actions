@@ -27,6 +27,12 @@ class Config implements AddRemotesConfig {
 
   generateOutput(): void {
     core.setOutput('verbose', this.verbose)
+
+    const remotes: string[] = []
+    for (const remote of this.remotes) {
+      remotes.push(remote.name)
+    }
+    core.setOutput('remotes-names', `${remotes.join('\n')}`)
   }
 }
 
