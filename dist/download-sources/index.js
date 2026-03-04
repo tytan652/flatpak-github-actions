@@ -69,7 +69,7 @@ const stages = __importStar(__nccwpck_require__(9761));
 const constants_1 = __nccwpck_require__(8729);
 class Config {
     constructor() {
-        this.verbose = core.getBooleanInput('verbose');
+        this.verbose = core.getBooleanInput('verbose', { required: true });
         this.arch = core.getInput('arch') || undefined;
         this.stateDir = core.getInput('state-dir') || constants_1.defaultStateDir;
         this.manifestPath = core.getInput('manifest-path', { required: true });

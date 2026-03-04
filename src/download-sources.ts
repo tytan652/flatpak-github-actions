@@ -14,7 +14,7 @@ class Config implements DownloadSourcesConfig {
   manifestPath: string
 
   constructor() {
-    this.verbose = core.getBooleanInput('verbose')
+    this.verbose = core.getBooleanInput('verbose', { required: true })
 
     this.arch = core.getInput('arch') || undefined
 

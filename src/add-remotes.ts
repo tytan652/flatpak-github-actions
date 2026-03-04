@@ -9,7 +9,7 @@ class Config implements AddRemotesConfig {
   remotes: Remotes[]
 
   constructor() {
-    this.verbose = core.getBooleanInput('verbose')
+    this.verbose = core.getBooleanInput('verbose', { required: true })
 
     const remotes = core.getMultilineInput('remotes', { required: true })
     if (!remotes.length) throw Error('Malformed supplied input: remotes')

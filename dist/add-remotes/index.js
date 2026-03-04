@@ -54,7 +54,7 @@ const stages = __importStar(__nccwpck_require__(9761));
 const stages_1 = __nccwpck_require__(9761);
 class Config {
     constructor() {
-        this.verbose = core.getBooleanInput('verbose');
+        this.verbose = core.getBooleanInput('verbose', { required: true });
         const remotes = core.getMultilineInput('remotes', { required: true });
         if (!remotes.length)
             throw Error('Malformed supplied input: remotes');
