@@ -3,15 +3,21 @@ import * as core from '@actions/core'
 import * as stages from './stages'
 import {
   AddRemotesConfig,
+  BuildAndFinishConfig,
   DownloadSourcesConfig,
   InstallDependenciesConfig,
   Remotes
 } from './stages'
 
-import { defaultStateDir } from './constants'
+import { defaultBuildDir, defaultStateDir } from './constants'
+import * as utils from './utils'
 
 class Config
-  implements AddRemotesConfig, InstallDependenciesConfig, DownloadSourcesConfig
+  implements
+    AddRemotesConfig,
+    InstallDependenciesConfig,
+    DownloadSourcesConfig,
+    BuildAndFinishConfig
 {
   verbose: boolean
 
@@ -21,15 +27,25 @@ class Config
 
   installDepsFrom: string[] | undefined
 
+  branch: string
+
+  buildDir: string
+
   stateDir: string
   manifestPath: string
+
+  ccache: boolean
+  stopAtModule: undefined
 
   constructor() {
     this.verbose = core.getBooleanInput('verbose', { required: true })
 
     this.arch = core.getInput('arch') || undefined
+    this.branch = core.getInput('branch', { required: true })
     this.stateDir = core.getInput('state-dir') || defaultStateDir
+    this.buildDir = core.getInput('build-dir') || defaultBuildDir
     this.manifestPath = core.getInput('manifest-path', { required: true })
+    this.ccache = core.getBooleanInput('ccache', { required: true })
 
     const remotes = core.getMultilineInput('remotes') || undefined
     if (remotes) {
@@ -54,13 +70,18 @@ class Config
 
   generateOutput(): void {
     core.setOutput('state-dir', this.stateDir)
+
+    core.setOutput('build-dir', this.buildDir)
   }
 }
 
 const run = async (): Promise<void> => {
   const config = new Config()
+  const manifest = utils.parseManifest(config.manifestPath)
 
   await stages.checkPrerequisites(config)
+
+  utils.checkManifestBranch(manifest, config.branch)
 
   if (config.remotes) {
     await core.group('Add remotes', async () => {
@@ -76,6 +97,10 @@ const run = async (): Promise<void> => {
 
   await core.group('Download sources', async () => {
     await stages.downloadSources(config)
+  })
+
+  await core.group('Build and finish', async () => {
+    await stages.buildAndFinish(config)
   })
 
   config.generateOutput()

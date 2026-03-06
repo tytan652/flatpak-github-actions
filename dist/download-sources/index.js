@@ -142,7 +142,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.downloadSources = exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
+exports.buildAndFinish = exports.downloadSources = exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const exec = __importStar(__nccwpck_require__(5236));
 const io = __importStar(__nccwpck_require__(4994));
@@ -205,6 +205,38 @@ const downloadSources = (config) => __awaiter(void 0, void 0, void 0, function* 
     yield runFlatpakBuilderWithFakeBuildDir(['--download-only'], config);
 });
 exports.downloadSources = downloadSources;
+const buildAndFinish = (config) => __awaiter(void 0, void 0, void 0, function* () {
+    const commonArgs = [
+        '--assumeyes',
+        '--disable-rofiles-fuse',
+        `--state-dir=${config.stateDir}`
+    ];
+    const buildArgs = [
+        '--disable-download',
+        '--force-clean',
+        '--build-only'
+    ];
+    const finishArgs = [
+        '--finish-only',
+        `--default-branch=${config.branch}`
+    ];
+    if (config.verbose)
+        commonArgs.push('--verbose');
+    if (config.arch)
+        commonArgs.push(`--arch=${config.arch}`);
+    if (config.ccache)
+        buildArgs.push('--ccache');
+    if (config.stopAtModule)
+        buildArgs.push(`--stop-at-module=${config.stopAtModule}`);
+    commonArgs.push(config.buildDir, config.manifestPath);
+    buildArgs.push(...commonArgs);
+    yield exec.exec(constants_1.flatpakBuilderCmd, buildArgs);
+    if (config.stopAtModule)
+        return;
+    finishArgs.push(...commonArgs);
+    yield exec.exec(constants_1.flatpakBuilderCmd, finishArgs);
+});
+exports.buildAndFinish = buildAndFinish;
 
 
 /***/ }),

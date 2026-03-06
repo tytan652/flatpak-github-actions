@@ -9,11 +9,13 @@ env:
     flathub https://flathub.org/repo/flathub.flatpakrepo
     flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
   MANIFEST_PATH: ./.github/flatpaks/gtk3-project/org.example.TestApp.Devel.yml
+  BRANCH: ci-test
 jobs:
   build-step-by-step:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
+      options: --privileged
     steps:
       - uses: actions/checkout@v6
 
@@ -42,6 +44,7 @@ jobs:
         uses: ./flatpak-builder/download-sources
         with:
           verbose: ${{ steps.install_deps.outputs.verbose }}
+          arch: ${{ steps.install_deps.outputs.arch }}
           state-dir: ${{ steps.install_deps.outputs.state-dir }}
           manifest-path: ${{ steps.install_deps.outputs.manifest-path }}
 
@@ -50,10 +53,20 @@ jobs:
         with:
           state-dir: ${{ steps.download_sources.outputs.state-dir }}
 
+      - name: Build and finish
+        uses: ./flatpak-builder/build-and-finish
+        with:
+          verbose: ${{ steps.download_sources.outputs.verbose }}
+          arch: ${{ steps.download_sources.outputs.arch }}
+          branch: ${{ env.BRANCH }}
+          state-dir: ${{ steps.download_sources.outputs.state-dir }}
+          manifest-path: ${{ steps.download_sources.outputs.manifest-path }}
+
   build-full:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
+      options: --privileged
     steps:
       - uses: actions/checkout@v6
 
@@ -61,4 +74,5 @@ jobs:
         with:
           verbose: true
           remotes: ${{ env.REMOTES }}
+          branch: ${{ env.BRANCH }}
           manifest-path: ${{ env.MANIFEST_PATH }}

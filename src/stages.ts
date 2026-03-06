@@ -12,6 +12,14 @@ interface ArchConfig {
   arch: string | undefined
 }
 
+interface BranchConfig {
+  branch: string
+}
+
+interface BuildDirConfig {
+  buildDir: string
+}
+
 interface BuilderCommonConfig extends VerboseConfig, ArchConfig {
   stateDir: string
   manifestPath: string
@@ -112,4 +120,48 @@ export const downloadSources = async (
   config: DownloadSourcesConfig
 ): Promise<void> => {
   await runFlatpakBuilderWithFakeBuildDir(['--download-only'], config)
+}
+
+export interface BuildAndFinishConfig
+  extends BranchConfig, BuilderCommonConfig, BuildDirConfig {
+  ccache: boolean
+  stopAtModule: string | undefined
+}
+
+export const buildAndFinish = async (
+  config: BuildAndFinishConfig
+): Promise<void> => {
+  const commonArgs: string[] = [
+    '--assumeyes',
+    '--disable-rofiles-fuse',
+    `--state-dir=${config.stateDir}`
+  ]
+  const buildArgs: string[] = [
+    '--disable-download',
+    '--force-clean',
+    '--build-only'
+  ]
+  const finishArgs: string[] = [
+    '--finish-only',
+    `--default-branch=${config.branch}`
+  ]
+
+  if (config.verbose) commonArgs.push('--verbose')
+
+  if (config.arch) commonArgs.push(`--arch=${config.arch}`)
+
+  if (config.ccache) buildArgs.push('--ccache')
+
+  if (config.stopAtModule)
+    buildArgs.push(`--stop-at-module=${config.stopAtModule}`)
+
+  commonArgs.push(config.buildDir, config.manifestPath)
+  buildArgs.push(...commonArgs)
+
+  await exec.exec(flatpakBuilderCmd, buildArgs)
+
+  if (config.stopAtModule) return
+
+  finishArgs.push(...commonArgs)
+  await exec.exec(flatpakBuilderCmd, finishArgs)
 }
