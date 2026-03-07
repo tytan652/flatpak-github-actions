@@ -1,4 +1,4 @@
-name: "Flatpak Install Deps"
+name: "Flatpak Builder Install Deps"
 description: "Install dependencies based on a Flatpak manifest"
 inputs:
   verbose:

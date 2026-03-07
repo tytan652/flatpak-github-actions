@@ -1,4 +1,4 @@
-name: "Flatpak Build And Finish"
+name: "Flatpak Builder Build And Finish"
 description: "Build and finish a Flatpak following its manifest"
 inputs:
   verbose:

@@ -1,4 +1,4 @@
-name: "Flatpak Export Build"
+name: "Flatpak Builder Export Build"
 description: "Export a Flatpak following its manifest"
 inputs:
   verbose:

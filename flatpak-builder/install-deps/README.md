@@ -4,6 +4,8 @@ This action enables installing dependencies based on a Flatpak manifest
 
 ## Documentation
 
+### Input
+
 - `verbose` - Enable verbosity
 - `arch` - Specify the machine architecture to build for (e.g. `x86_64`, `aarch64`). If no architecture is specified, the host architecture will be automatically detected.
 - `install-deps-from` - A name list of Flatpak remotes to install dependencies from. Their order is took in account when flatpak-builder has to install dependencies (first to last).

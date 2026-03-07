@@ -1,4 +1,4 @@
-name: "Flatpak Download Sources"
+name: "Flatpak Builder Download Sources"
 description: "Download sources from a Flatpak manifest"
 inputs:
   verbose:

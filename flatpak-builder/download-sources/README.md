@@ -4,6 +4,8 @@ This action enables download sources from a Flatpak manifest
 
 ## Documentation
 
+### Input
+
 - `verbose` - Enable verbosity
 - `arch` - Specify the machine architecture to build for (e.g. `x86_64`, `aarch64`). If no architecture is specified, the host architecture will be automatically detected.
 - `state-dir` - Use this directory for storing state (downloads, build dirs, build cache, etc) rather than the internal default (`.flatpak-builder`)

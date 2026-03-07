@@ -1,4 +1,4 @@
-# Flatpak Export Build step action
+# Export Build step action
 
 This action enables exporting a Flatpak following its manifest
 
