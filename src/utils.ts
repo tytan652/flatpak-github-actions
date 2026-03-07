@@ -25,7 +25,8 @@ export const parseManifest = (
 
 export const checkManifestBranch = (
   manifest: FlatpakBuilderManifest,
-  branch: string
+  branch: string,
+  bundle: boolean = false
 ): void => {
   if (!manifest.branch) return
 
@@ -33,8 +34,26 @@ export const checkManifestBranch = (
     core.notice(
       "Flatpak manifest has a branch specified but it matches step's branch"
     )
-  else
-    core.warning(
+  else {
+    const message =
       "Flatpak manifest has a branch specified that mismatches step's branch"
+    if (bundle) throw Error(message)
+
+    core.warning(message)
+  }
+}
+
+export const getManifestId = (manifest: FlatpakBuilderManifest): string => {
+  if (manifest['app-id'])
+    core.warning('The use of app-id in Flatpak manifest is deprecated')
+
+  if (manifest.id && manifest['app-id'])
+    throw Error(
+      'Flatpak manifest has id and app-id specified, remove the latter'
     )
+
+  const id = manifest.id || manifest['app-id']
+  if (!id) throw Error('Flatpak manifest has no id specified')
+
+  return id
 }

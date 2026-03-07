@@ -4,7 +4,7 @@
   "main": "dist/add-remotes/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --removeComments && ncc build lib/add-remotes.js -o dist/add-remotes && ncc build lib/install-deps.js -o dist/install-deps && ncc build lib/download-sources.js -o dist/download-sources && ncc build lib/build-and-finish.js -o dist/build-and-finish && ncc build lib/export-build.js -o dist/export-build && ncc build lib/build-full.js -o dist/build-full",
+    "build": "tsc --removeComments && ncc build lib/add-remotes.js -o dist/add-remotes && ncc build lib/install-deps.js -o dist/install-deps && ncc build lib/download-sources.js -o dist/download-sources && ncc build lib/build-and-finish.js -o dist/build-and-finish && ncc build lib/export-build.js -o dist/export-build && ncc build lib/bundle.js -o dist/bundle && ncc build lib/build-full.js -o dist/build-full",
     "format": "prettier --cache --cache-location node_modules/.cache/prettier/cache --write 'src/**/*.ts'",
     "format-check": "prettier --cache --cache-location node_modules/.cache/prettier/cache --check 'src/**/*.ts'",
     "lint": "eslint --cache --cache-strategy content --cache-location node_modules/.cache/eslint/cache src/**/*.ts",

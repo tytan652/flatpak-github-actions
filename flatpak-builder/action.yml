@@ -7,6 +7,7 @@ inputs:
   remotes:
     description: |
       A list of name-URL pairs of Flatpak remotes to add.
+      If bundle, the first one will be set as its runtime repo.
       Members of the pair is separated with a space.
       Check the readme for an example.
     required: true
@@ -44,6 +45,15 @@ inputs:
       Enable the full policy of AppStream compose URL policy (partial being flatpak-builder default).
       No-op if mirror-screenshots-url is not specified.
     default: "false"
+  bundle:
+    description: "Generate a bundle with the application"
+    default: "true"
+  bundle-name:
+    description: |
+      Name of the bundle, used for the bundle filename.
+      It will be automatically appended with the .flatpak extension.
+      Technically no-op if bundle is set to false.
+    required: false
 outputs:
   state-dir:
     description: "State directory used"
@@ -51,6 +61,8 @@ outputs:
     description: "Build directory used"
   repo-dir:
     description: "Repo directory used"
+  bundle-filename:
+    description: "Filename of the generated bundle"
 runs:
   using: "node24"
   main: "../dist/build-full/index.js"

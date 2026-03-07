@@ -33,6 +33,8 @@ class Config implements AddRemotesConfig {
       remotes.push(remote.name)
     }
     core.setOutput('remotes-names', `${remotes.join('\n')}`)
+
+    core.setOutput('first-remote-url', this.remotes[0].url)
   }
 }
 

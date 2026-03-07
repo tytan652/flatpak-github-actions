@@ -1,6 +1,6 @@
-# Export Build step action
+# Flatpak Export Build step action
 
-This action enabled exporting a Flatpak following its manifest
+This action enables exporting a Flatpak following its manifest
 
 ## Documentation
 
@@ -29,3 +29,4 @@ Most of the outputs are meant to be used by other `flatpak-builder` step actions
 - `arch` - Machine architecture specified as input
 - `branch` - Branch given as input
 - `repo-dir` − Repo directory used
+- `manifest-id` - Id found in the manifest

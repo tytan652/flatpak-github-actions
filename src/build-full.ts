@@ -4,6 +4,7 @@ import * as stages from './stages'
 import {
   AddRemotesConfig,
   BuildAndFinishConfig,
+  BundleConfig,
   DownloadSourcesConfig,
   ExportBuildConfig,
   InstallDependenciesConfig,
@@ -19,7 +20,8 @@ class Config
     InstallDependenciesConfig,
     DownloadSourcesConfig,
     BuildAndFinishConfig,
-    ExportBuildConfig
+    ExportBuildConfig,
+    BundleConfig
 {
   verbose: boolean
 
@@ -44,6 +46,13 @@ class Config
   commitSubject: string | undefined
   mirrorScreenshotsUrl: string | undefined
   fullComposeUrlPolicy: boolean
+
+  isRuntime: boolean
+  bundleRuntimeRepo: string | undefined
+  bundleName: string
+  bundleId: string
+
+  bundle: boolean
 
   constructor() {
     this.verbose = core.getBooleanInput('verbose', { required: true })
@@ -78,10 +87,25 @@ class Config
         this.remotes.push(new Remotes(remoteSplit[0], remoteSplit[1]))
         this.installDepsFrom.push(remoteSplit[0])
       }
+      this.bundleRuntimeRepo = this.remotes[0].url
     } else {
       this.remotes = undefined
       this.installDepsFrom = undefined
+      this.bundleRuntimeRepo = undefined
     }
+
+    const manifest = utils.parseManifest(this.manifestPath)
+    this.bundle = core.getBooleanInput('bundle', { required: true })
+
+    this.isRuntime = false
+
+    utils.checkManifestBranch(manifest, this.branch, this.bundle)
+    this.bundleId = utils.getManifestId(manifest)
+
+    this.bundleName = core.getInput('bundle-name')
+    if (!this.bundleName)
+      this.bundleName =
+        (this.arch && `${this.bundleId}-${this.arch}`) || `${this.bundleId}`
   }
 
   generateOutput(): void {
@@ -90,16 +114,19 @@ class Config
     core.setOutput('build-dir', this.buildDir)
 
     core.setOutput('repo-dir', this.repoDir)
+
+    if (this.bundle)
+      core.setOutput(
+        'bundle-filename',
+        stages.bundleFilenameFromName(this.bundleName)
+      )
   }
 }
 
 const run = async (): Promise<void> => {
   const config = new Config()
-  const manifest = utils.parseManifest(config.manifestPath)
 
   await stages.checkPrerequisites(config)
-
-  utils.checkManifestBranch(manifest, config.branch)
 
   if (config.remotes) {
     await core.group('Add remotes', async () => {
@@ -123,6 +150,10 @@ const run = async (): Promise<void> => {
 
   await core.group('Export build', async () => {
     await stages.exportBuild(config)
+  })
+
+  await core.group('Bundle', async () => {
+    await stages.bundle(config)
   })
 
   config.generateOutput()

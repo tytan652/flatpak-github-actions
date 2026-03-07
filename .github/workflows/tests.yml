@@ -12,6 +12,7 @@ env:
   BRANCH: ci-test
   COMMIT_SUBJECT: Initial commit
   MIRROR_SCREENSHOTS_URL: https://example.com/media
+  BUNDLE_NAME: TestApp
 jobs:
   build-step-by-step:
     runs-on: ubuntu-latest
@@ -66,6 +67,7 @@ jobs:
           manifest-path: ${{ steps.download_sources.outputs.manifest-path }}
       
       - name: Export build
+        id: export_build
         uses: ./flatpak-builder/export-build
         with:
           verbose: ${{ steps.build_and_finish.outputs.verbose }}
@@ -76,6 +78,17 @@ jobs:
           manifest-path: ${{ steps.build_and_finish.outputs.manifest-path }}
           commit-subject: ${{ env.COMMIT_SUBJECT }}
           mirror-screenshots-url: ${{ env.MIRROR_SCREENSHOTS_URL }}
+
+      - name: Bundle
+        uses: ./flatpak-builder/bundle
+        with:
+          verbose: ${{ steps.export_build.outputs.verbose }}
+          arch: ${{ steps.export_build.outputs.arch }}
+          branch: ${{ steps.export_build.outputs.branch }}
+          repo-dir: ${{ steps.export_build.outputs.repo-dir }}
+          runtime-repo: ${{ steps.add_remotes.outputs.first-remote-url }}
+          bundle-name: ${{ env.BUNDLE_NAME }}
+          id: ${{ steps.export_build.outputs.manifest-id }}
 
   build-full:
     runs-on: ubuntu-latest
@@ -93,3 +106,4 @@ jobs:
           manifest-path: ${{ env.MANIFEST_PATH }}
           commit-subject: ${{ env.COMMIT_SUBJECT }}
           mirror-screenshots-url: ${{ env.MIRROR_SCREENSHOTS_URL }}
+          bundle-name: ${{ env.BUNDLE_NAME }}

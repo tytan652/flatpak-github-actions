@@ -30,3 +30,4 @@ Most of the outputs are meant to be used by other `flatpak-builder` step actions
   flathub-beta
   gnome-nightly
   ```
+- `first-remote-url` - URL of the first remote of the Flatpak remotes given as input

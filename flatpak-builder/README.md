@@ -14,6 +14,7 @@ WIP
 - `verbose` - Enable verbosity
 - `remotes` - A list of name-URL pairs of Flatpak remotes to add. Members of the pair is separated with a space.
   - Their order is took in account when flatpak-builder has to install dependencies (first to last).
+  -  If bundle, the first one will be set as its runtime repo.
 
   Example: 
   ``` yaml
@@ -36,9 +37,12 @@ WIP
   - Defaults to `Built from ${{ github.sha }}` if a commit SHA is present in the `github` context
 - `mirror-screenshots-url` - Specify the URL to mirror screenshots
 - `full-compose-url-policy` - Enable the full policy of AppStream compose URL policy (partial being flatpak-builder default). No-op if `mirror-screenshots-url` is not specified.
+- `bundle` -  Generate a bundle with the application
+- `bundle-name` - Name of the bundle, used for the bundle filename. It will be automatically appended with the .flatpak extension. Technically no-op if bundle is set to false.
 
 ### Output
 
 - `state-dir` - State directory used
 - `build-dir` - Build directory used
 - `repo-dir` − Repo directory used
+- `bundle-filename` - Filename of the generated bundle

@@ -44,6 +44,8 @@ outputs:
     description: "Branch given as input"
   repo-dir:
     description: "Repo directory used"
+  manifest-id:
+    description: "Id found in the manifest"
 runs:
   using: "node24"
   main: "../../dist/export-build/index.js"

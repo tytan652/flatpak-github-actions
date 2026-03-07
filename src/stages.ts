@@ -225,3 +225,37 @@ export const exportBuild = async (config: ExportBuildConfig): Promise<void> => {
 
   await exec.exec(flatpakBuilderCmd, args)
 }
+
+export const bundleFilenameFromName = (bundleName: string): string => {
+  return `${bundleName}.flatpak`
+}
+
+export interface BundleConfig
+  extends VerboseConfig, ArchConfig, BranchConfig, RepoDirConfig {
+  isRuntime: boolean
+  bundleRuntimeRepo: string | undefined
+  bundleName: string
+  bundleId: string
+}
+
+export const bundle = async (config: BundleConfig): Promise<void> => {
+  const args: string[] = ['build-bundle']
+
+  if (config.verbose) args.push('--verbose')
+
+  if (config.arch) args.push(`--arch=${config.arch}`)
+
+  if (config.isRuntime) args.push('--runtime')
+
+  if (config.bundleRuntimeRepo)
+    args.push(`--runtime-repo=${config.bundleRuntimeRepo}`)
+
+  args.push(
+    config.repoDir,
+    `${bundleFilenameFromName(config.bundleName)}`,
+    config.bundleId,
+    config.branch
+  )
+
+  await exec.exec(flatpakCmd, args)
+}

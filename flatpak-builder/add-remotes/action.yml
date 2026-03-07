@@ -17,6 +17,8 @@ outputs:
     description: |
       Name list of the Flatpak remotes given as input.
       Check the readme for an example.
+  first-remote-url:
+    description: URL of the first remote of the Flatpak remotes given as input
 runs:
   using: "node24"
   main: "../../dist/add-remotes/index.js"

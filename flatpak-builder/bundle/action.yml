@@ -1,0 +1,37 @@
+name: "Flatpak Bundle"
+description: "Bundle a Flatpak from a local OSTree repository"
+inputs:
+  verbose:
+    description: "Enable verbosity"
+    default: "false"
+  arch:
+    description: |
+      Specify the machine architecture to build for (e.g. x86_64, aarch64).
+      If no architecture is specified, the host architecture will be automatically detected.
+    required: false
+  branch:
+    description: "Specify the branch to bundle"
+    required: true
+  repo-dir:
+    description: "Use this directory as local OSTree repository"
+    required: false
+  is-runtime:
+    description: "Enable to export a runtime instead of an application"
+    default: "false"
+  runtime-repo:
+    description: "Specify the URL of the Flatpak remote that that supplies the runtimes required by the app"
+    required: false
+  bundle-name:
+    description: |
+      Name of the bundle, used for the bundle filename.
+      It will be automatically appended with the .flatpak extension.
+    required: true
+  id:
+    description: "Id of the app/runtime to bundle"
+    required: true
+outputs:
+  bundle-filename:
+    description: Filename of the generated bundle
+runs:
+  using: "node24"
+  main: "../../dist/bundle/index.js"

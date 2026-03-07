@@ -4,6 +4,7 @@ import * as stages from './stages'
 import { ExportBuildConfig } from './stages'
 
 import { defaultBuildDir, defaultRepoDir, defaultStateDir } from './constants'
+import * as utils from './utils'
 
 class Config implements ExportBuildConfig {
   verbose: boolean
@@ -42,6 +43,8 @@ class Config implements ExportBuildConfig {
   }
 
   generateOutput(): void {
+    const manifest = utils.parseManifest(this.manifestPath)
+
     core.setOutput('verbose', this.verbose)
 
     core.setOutput('arch', this.arch)
@@ -49,6 +52,8 @@ class Config implements ExportBuildConfig {
     core.setOutput('branch', this.branch)
 
     core.setOutput('repo-dir', this.repoDir)
+
+    core.setOutput('manifest-id', utils.getManifestId(manifest))
   }
 }
 

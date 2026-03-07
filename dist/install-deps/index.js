@@ -149,7 +149,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.exportBuild = exports.buildAndFinish = exports.downloadSources = exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
+exports.bundle = exports.bundleFilenameFromName = exports.exportBuild = exports.buildAndFinish = exports.downloadSources = exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const exec = __importStar(__nccwpck_require__(5236));
 const io = __importStar(__nccwpck_require__(4994));
@@ -277,6 +277,24 @@ const exportBuild = (config) => __awaiter(void 0, void 0, void 0, function* () {
     yield exec.exec(constants_1.flatpakBuilderCmd, args);
 });
 exports.exportBuild = exportBuild;
+const bundleFilenameFromName = (bundleName) => {
+    return `${bundleName}.flatpak`;
+};
+exports.bundleFilenameFromName = bundleFilenameFromName;
+const bundle = (config) => __awaiter(void 0, void 0, void 0, function* () {
+    const args = ['build-bundle'];
+    if (config.verbose)
+        args.push('--verbose');
+    if (config.arch)
+        args.push(`--arch=${config.arch}`);
+    if (config.isRuntime)
+        args.push('--runtime');
+    if (config.bundleRuntimeRepo)
+        args.push(`--runtime-repo=${config.bundleRuntimeRepo}`);
+    args.push(config.repoDir, `${(0, exports.bundleFilenameFromName)(config.bundleName)}`, config.bundleId, config.branch);
+    yield exec.exec(constants_1.flatpakCmd, args);
+});
+exports.bundle = bundle;
 
 
 /***/ }),
