@@ -169,12 +169,13 @@ const checkFlatpakBuilder = (config) => __awaiter(void 0, void 0, void 0, functi
     if (semver.lt(version, constants_1.flatpakBuilderMinVersion))
         throw Error(`flatpak-builder ${constants_1.flatpakBuilderMinVersion} or later is required, found ${version}`);
 });
-const checkPrerequisites = (config) => __awaiter(void 0, void 0, void 0, function* () {
+const checkPrerequisites = (config_1, ...args_1) => __awaiter(void 0, [config_1, ...args_1], void 0, function* (config, flatpakCmdOnly = false) {
     if (config.verbose)
         core.startGroup('Check pre-requisites');
     if (yield exec.exec(constants_1.flatpakCmd, ['--version'], { silent: !config.verbose }))
         throw Error('Failed to retrieve flatpak version');
-    yield checkFlatpakBuilder(config);
+    if (!flatpakCmdOnly)
+        yield checkFlatpakBuilder(config);
     if (config.verbose)
         core.endGroup();
 });

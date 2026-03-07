@@ -57,14 +57,15 @@ const checkFlatpakBuilder = async (config: VerboseConfig): Promise<void> => {
 }
 
 export const checkPrerequisites = async (
-  config: VerboseConfig
+  config: VerboseConfig,
+  flatpakCmdOnly: boolean = false
 ): Promise<void> => {
   if (config.verbose) core.startGroup('Check pre-requisites')
 
   if (await exec.exec(flatpakCmd, ['--version'], { silent: !config.verbose }))
     throw Error('Failed to retrieve flatpak version')
 
-  await checkFlatpakBuilder(config)
+  if (!flatpakCmdOnly) await checkFlatpakBuilder(config)
 
   if (config.verbose) core.endGroup()
 }

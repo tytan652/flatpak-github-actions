@@ -24,7 +24,7 @@ jobs:
 
       - name: Add remotes
         id: add_remotes
-        uses: ./flatpak-builder/add-remotes
+        uses: ./flatpak/add-remotes
         with:
           verbose: true
           remotes: ${{ env.REMOTES }}
@@ -80,7 +80,7 @@ jobs:
           mirror-screenshots-url: ${{ env.MIRROR_SCREENSHOTS_URL }}
 
       - name: Bundle
-        uses: ./flatpak-builder/bundle
+        uses: ./flatpak/bundle
         with:
           verbose: ${{ steps.export_build.outputs.verbose }}
           arch: ${{ steps.export_build.outputs.arch }}

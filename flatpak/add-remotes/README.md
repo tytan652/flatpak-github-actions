@@ -19,7 +19,7 @@ This action enables adding Flatpak repos
 
 ### Output
 
-Most of the outputs are meant to be used by other `flatpak-builder` step actions
+Most of the outputs are meant to be used by other step actions of this repo
 
 - `verbose` - Verbosity state given as input
 - `remotes-names` - Name list of the Flatpak remotes given as input

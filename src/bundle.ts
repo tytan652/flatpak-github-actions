@@ -40,7 +40,7 @@ class Config implements BundleConfig {
 const run = async (): Promise<void> => {
   const config = new Config()
 
-  await stages.checkPrerequisites(config)
+  await stages.checkPrerequisites(config, true)
 
   await stages.bundle(config)
 
