@@ -4,7 +4,7 @@
   "main": "dist/add-remotes/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --removeComments && ncc build lib/add-remotes.js -o dist/add-remotes && ncc build lib/install-deps.js -o dist/install-deps && ncc build lib/download-sources.js -o dist/download-sources && ncc build lib/build-and-finish.js -o dist/build-and-finish && ncc build lib/build-full.js -o dist/build-full",
+    "build": "tsc --removeComments && ncc build lib/add-remotes.js -o dist/add-remotes && ncc build lib/install-deps.js -o dist/install-deps && ncc build lib/download-sources.js -o dist/download-sources && ncc build lib/build-and-finish.js -o dist/build-and-finish && ncc build lib/export-build.js -o dist/export-build && ncc build lib/build-full.js -o dist/build-full",
     "format": "prettier --cache --cache-location node_modules/.cache/prettier/cache --write 'src/**/*.ts'",
     "format-check": "prettier --cache --cache-location node_modules/.cache/prettier/cache --check 'src/**/*.ts'",
     "lint": "eslint --cache --cache-strategy content --cache-location node_modules/.cache/eslint/cache src/**/*.ts",
@@ -14,12 +14,14 @@
     "@actions/core": "^2.0.3",
     "@actions/exec": "^2.0.0",
     "@actions/io": "^2.0.0",
-    "js-yaml": "^4.1.1"
+    "js-yaml": "^4.1.1",
+    "semver": "^7.7.4"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.3.3",
+    "@types/semver": "^7.7.1",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
     "@vercel/ncc": "^0.38.4",

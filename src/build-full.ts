@@ -5,11 +5,12 @@ import {
   AddRemotesConfig,
   BuildAndFinishConfig,
   DownloadSourcesConfig,
+  ExportBuildConfig,
   InstallDependenciesConfig,
   Remotes
 } from './stages'
 
-import { defaultBuildDir, defaultStateDir } from './constants'
+import { defaultBuildDir, defaultRepoDir, defaultStateDir } from './constants'
 import * as utils from './utils'
 
 class Config
@@ -17,7 +18,8 @@ class Config
     AddRemotesConfig,
     InstallDependenciesConfig,
     DownloadSourcesConfig,
-    BuildAndFinishConfig
+    BuildAndFinishConfig,
+    ExportBuildConfig
 {
   verbose: boolean
 
@@ -31,11 +33,17 @@ class Config
 
   buildDir: string
 
+  repoDir: string
+
   stateDir: string
   manifestPath: string
 
   ccache: boolean
   stopAtModule: undefined
+
+  commitSubject: string | undefined
+  mirrorScreenshotsUrl: string | undefined
+  fullComposeUrlPolicy: boolean
 
   constructor() {
     this.verbose = core.getBooleanInput('verbose', { required: true })
@@ -44,8 +52,16 @@ class Config
     this.branch = core.getInput('branch', { required: true })
     this.stateDir = core.getInput('state-dir') || defaultStateDir
     this.buildDir = core.getInput('build-dir') || defaultBuildDir
+    this.repoDir = core.getInput('repo-dir') || defaultRepoDir
     this.manifestPath = core.getInput('manifest-path', { required: true })
     this.ccache = core.getBooleanInput('ccache', { required: true })
+    this.commitSubject = core.getInput('commit-subject') || undefined
+    this.mirrorScreenshotsUrl =
+      core.getInput('mirror-screenshots-url') || undefined
+    this.fullComposeUrlPolicy = core.getBooleanInput(
+      'full-compose-url-policy',
+      { required: true }
+    )
 
     const remotes = core.getMultilineInput('remotes') || undefined
     if (remotes) {
@@ -72,6 +88,8 @@ class Config
     core.setOutput('state-dir', this.stateDir)
 
     core.setOutput('build-dir', this.buildDir)
+
+    core.setOutput('repo-dir', this.repoDir)
   }
 }
 
@@ -101,6 +119,10 @@ const run = async (): Promise<void> => {
 
   await core.group('Build and finish', async () => {
     await stages.buildAndFinish(config)
+  })
+
+  await core.group('Export build', async () => {
+    await stages.exportBuild(config)
   })
 
   config.generateOutput()

@@ -1,15 +1,9 @@
-name: "Flatpak Builder"
-description: "Build and create a bundle from a Flatpak manifest"
+name: "Flatpak Export Build"
+description: "Export a Flatpak following its manifest"
 inputs:
   verbose:
     description: "Enable verbosity"
     default: "false"
-  remotes:
-    description: |
-      A list of name-URL pairs of Flatpak remotes to add.
-      Members of the pair is separated with a space.
-      Check the readme for an example.
-    required: true
   arch:
     description: |
       Specify the machine architecture to build for (e.g. x86_64, aarch64).
@@ -30,12 +24,9 @@ inputs:
   manifest-path:
     description: "Path to the Flatpak manifest to build"
     required: true
-  ccache:
-    description: "Enable use of ccache in the build (needs ccache in the sdk)"
-    default: "false"
   commit-subject:
-    description: "Commit subject to use when exporting the build in the local OSTree repo"
-    default: ${{ github.sha && format('Built from {0}', github.sha) }}
+    description: "Specify the commit subject to use when exporting the build in the local OSTree repo"
+    required: false
   mirror-screenshots-url:
     description: "Specify the URL to mirror screenshots"
     required: false
@@ -45,12 +36,14 @@ inputs:
       No-op if mirror-screenshots-url is not specified.
     default: "false"
 outputs:
-  state-dir:
-    description: "State directory used"
-  build-dir:
-    description: "Build directory used"
+  verbose:
+    description: "Verbosity state given as input"
+  arch:
+    description: "Machine architecture specified as input"
+  branch:
+    description: "Branch given as input"
   repo-dir:
     description: "Repo directory used"
 runs:
   using: "node24"
-  main: "../dist/build-full/index.js"
+  main: "../../dist/export-build/index.js"

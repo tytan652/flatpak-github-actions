@@ -10,6 +10,8 @@ env:
     flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
   MANIFEST_PATH: ./.github/flatpaks/gtk3-project/org.example.TestApp.Devel.yml
   BRANCH: ci-test
+  COMMIT_SUBJECT: Initial commit
+  MIRROR_SCREENSHOTS_URL: https://example.com/media
 jobs:
   build-step-by-step:
     runs-on: ubuntu-latest
@@ -54,6 +56,7 @@ jobs:
           state-dir: ${{ steps.download_sources.outputs.state-dir }}
 
       - name: Build and finish
+        id: build_and_finish
         uses: ./flatpak-builder/build-and-finish
         with:
           verbose: ${{ steps.download_sources.outputs.verbose }}
@@ -61,6 +64,18 @@ jobs:
           branch: ${{ env.BRANCH }}
           state-dir: ${{ steps.download_sources.outputs.state-dir }}
           manifest-path: ${{ steps.download_sources.outputs.manifest-path }}
+      
+      - name: Export build
+        uses: ./flatpak-builder/export-build
+        with:
+          verbose: ${{ steps.build_and_finish.outputs.verbose }}
+          arch: ${{ steps.build_and_finish.outputs.arch }}
+          branch: ${{ steps.build_and_finish.outputs.branch }}
+          state-dir: ${{ steps.build_and_finish.outputs.state-dir }}
+          build-dir: ${{ steps.build_and_finish.outputs.build-dir }}
+          manifest-path: ${{ steps.build_and_finish.outputs.manifest-path }}
+          commit-subject: ${{ env.COMMIT_SUBJECT }}
+          mirror-screenshots-url: ${{ env.MIRROR_SCREENSHOTS_URL }}
 
   build-full:
     runs-on: ubuntu-latest
@@ -76,3 +91,5 @@ jobs:
           remotes: ${{ env.REMOTES }}
           branch: ${{ env.BRANCH }}
           manifest-path: ${{ env.MANIFEST_PATH }}
+          commit-subject: ${{ env.COMMIT_SUBJECT }}
+          mirror-screenshots-url: ${{ env.MIRROR_SCREENSHOTS_URL }}
