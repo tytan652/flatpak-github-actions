@@ -276,6 +276,11 @@ const exportBuild = (config) => __awaiter(void 0, void 0, void 0, function* () {
         else
             args.push('--compose-url-policy=partial');
     }
+    if (config.gpgKeyIds) {
+        for (const keyId of config.gpgKeyIds) {
+            args.push(`--gpg-sign=${keyId}`);
+        }
+    }
     args.push(config.buildDir, config.manifestPath);
     yield exec.exec(constants_1.flatpakBuilderCmd, args);
 });

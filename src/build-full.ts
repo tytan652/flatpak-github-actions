@@ -47,6 +47,7 @@ class Config
   commitSubject: string | undefined
   mirrorScreenshotsUrl: string | undefined
   fullComposeUrlPolicy: boolean
+  gpgKeyIds: string[] | undefined
 
   isRuntime: boolean
   bundleRuntimeRepo: string | undefined
@@ -73,6 +74,7 @@ class Config
       'full-compose-url-policy',
       { required: true }
     )
+    this.gpgKeyIds = core.getMultilineInput('gpg-key-ids') || undefined
 
     const remotes = core.getMultilineInput('remotes') || undefined
     if (remotes) {

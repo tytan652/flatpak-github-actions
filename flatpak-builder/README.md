@@ -17,6 +17,7 @@ WIP
 - D-Bus session and virtual X server are no longer provided while building/testing, it is up to the action consumer to setup the enviroment that the action will run on
 - OSTree commit subject can be specified
 - AppStream compose URL policy is not set to full by default
+- `gpg-sign` is replaced with `gpg-key-ids` and support multiple key IDs
 - `build-bundle` and `bundle` have been refactored to `bundle` and `bundle-name`
   - It is now assumed that you do not append the name with `.flatpak`, the action will add it itself
 
@@ -50,6 +51,14 @@ WIP
   - Defaults to `Built from ${{ github.sha }}` if a commit SHA is present in the `github` context
 - `mirror-screenshots-url` - optional - Specify the URL to mirror screenshots
 - `full-compose-url-policy` - **`false`** - Enable the full policy of AppStream compose URL policy (partial being flatpak-builder default). No-op if `mirror-screenshots-url` is not specified.
+- `gpg-key-ids` - optional - GPG key IDs to sign the OSTree commit with
+
+  Example:
+  ```yaml
+  gpg-key-ids: |
+    3AA5C34371567BD2
+    2DB76517343C5AA3
+  ```
 - `bundle` - **`true`** -  Generate a bundle with the application
 - `bundle-name` - optional - Name of the bundle, used for the bundle filename. It will be automatically appended with the .flatpak extension. Technically no-op if bundle is set to false.
   - Defaults to `'manifest-id'-'arch'` or `'manifest-id'` depending on if `arch` was explicitly set

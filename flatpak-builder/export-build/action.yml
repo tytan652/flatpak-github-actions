@@ -35,6 +35,11 @@ inputs:
       Enable the full policy of AppStream compose URL policy (partial being flatpak-builder default).
       No-op if mirror-screenshots-url is not specified.
     default: "false"
+  gpg-key-ids:
+    description: |
+      GPG key IDs to sign the OSTree commit with.
+      Check the readme for an example with multiple IDs.
+    required: false
 outputs:
   verbose:
     description: "Verbosity state given as input"

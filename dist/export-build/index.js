@@ -83,6 +83,7 @@ class Config {
         this.mirrorScreenshotsUrl =
             core.getInput('mirror-screenshots-url') || undefined;
         this.fullComposeUrlPolicy = core.getBooleanInput('full-compose-url-policy', { required: true });
+        this.gpgKeyIds = core.getMultilineInput('gpg-key-ids') || undefined;
     }
     generateOutput() {
         const manifest = utils.parseManifest(this.manifestPath);
@@ -280,6 +281,11 @@ const exportBuild = (config) => __awaiter(void 0, void 0, void 0, function* () {
             args.push('--compose-url-policy=full');
         else
             args.push('--compose-url-policy=partial');
+    }
+    if (config.gpgKeyIds) {
+        for (const keyId of config.gpgKeyIds) {
+            args.push(`--gpg-sign=${keyId}`);
+        }
     }
     args.push(config.buildDir, config.manifestPath);
     yield exec.exec(constants_1.flatpakBuilderCmd, args);

@@ -23,6 +23,7 @@ class Config implements ExportBuildConfig {
   commitSubject: string | undefined
   mirrorScreenshotsUrl: string | undefined
   fullComposeUrlPolicy: boolean
+  gpgKeyIds: string[] | undefined
 
   constructor() {
     this.verbose = core.getBooleanInput('verbose', { required: true })
@@ -40,6 +41,7 @@ class Config implements ExportBuildConfig {
       'full-compose-url-policy',
       { required: true }
     )
+    this.gpgKeyIds = core.getMultilineInput('gpg-key-ids') || undefined
   }
 
   generateOutput(): void {

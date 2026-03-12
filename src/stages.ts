@@ -201,6 +201,7 @@ export interface ExportBuildConfig
   commitSubject: string | undefined
   mirrorScreenshotsUrl: string | undefined
   fullComposeUrlPolicy: boolean
+  gpgKeyIds: string[] | undefined
 }
 
 export const exportBuild = async (config: ExportBuildConfig): Promise<void> => {
@@ -223,6 +224,12 @@ export const exportBuild = async (config: ExportBuildConfig): Promise<void> => {
 
     if (config.fullComposeUrlPolicy) args.push('--compose-url-policy=full')
     else args.push('--compose-url-policy=partial')
+  }
+
+  if (config.gpgKeyIds) {
+    for (const keyId of config.gpgKeyIds) {
+      args.push(`--gpg-sign=${keyId}`)
+    }
   }
 
   args.push(config.buildDir, config.manifestPath)

@@ -20,6 +20,14 @@ This action enables exporting a Flatpak following its manifest
   - If not set, the subject is created by the internal Flatpak command
 - `mirror-screenshots-url` - optional - Specify the URL to mirror screenshots
 - `full-compose-url-policy` - `false` - Enable the full policy of AppStream compose URL policy (partial being flatpak-builder default). No-op if `mirror-screenshots-url` is not specified.
+- `gpg-key-ids` - optional - GPG key IDs to sign the OSTree commit with
+
+  Example:
+  ```yaml
+  gpg-key-ids: |
+    3AA5C34371567BD2
+    2DB76517343C5AA3
+  ```
 
 ### Output
 
