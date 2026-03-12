@@ -7,6 +7,7 @@ WIP
 ### Difference with v6
 
 - flatpak-builder 1.4.6 or later is required and the requirement can increase through minor version bump of the action
+- D-Bus session and virtual X server are no longer provided while building/testing, it is up to the action consumer to setup the enviroment that the action will run on
 - `stop-at-module` is no longer part of the action but is available through the `build-and-finish` step action
 
 ### Input
@@ -33,6 +34,8 @@ WIP
 - `repo-dir` - Use this directory as local OSTree repository rather than the internal default (repo)
 - `manifest-path` - Path to the Flatpak manifest to build
 - `ccache` - Enable use of ccache in the build (needs ccache in the sdk)
+- `run-tests` - Run modules tests if any
+  - If tests requires a specific environment (e.g. D-Bus session, Wayland socket), it is up to the action consumer to provide it.
 - `commit-subject` - Specify the commit subject to use when exporting the build in the local OSTree repo
   - Defaults to `Built from ${{ github.sha }}` if a commit SHA is present in the `github` context
 - `mirror-screenshots-url` - Specify the URL to mirror screenshots

@@ -249,6 +249,8 @@ const buildAndFinish = (config) => __awaiter(void 0, void 0, void 0, function* (
         buildArgs.push('--ccache');
     if (config.stopAtModule)
         buildArgs.push(`--stop-at-module=${config.stopAtModule}`);
+    if (!config.runTests)
+        buildArgs.push('--disable-tests');
     commonArgs.push(config.buildDir, config.manifestPath);
     buildArgs.push(...commonArgs);
     yield exec.exec(constants_1.flatpakBuilderCmd, buildArgs);

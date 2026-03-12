@@ -42,6 +42,7 @@ class Config
 
   ccache: boolean
   stopAtModule: undefined
+  runTests: boolean
 
   commitSubject: string | undefined
   mirrorScreenshotsUrl: string | undefined
@@ -64,6 +65,7 @@ class Config
     this.repoDir = core.getInput('repo-dir') || defaultRepoDir
     this.manifestPath = core.getInput('manifest-path', { required: true })
     this.ccache = core.getBooleanInput('ccache', { required: true })
+    this.runTests = core.getBooleanInput('run-tests', { required: true })
     this.commitSubject = core.getInput('commit-subject') || undefined
     this.mirrorScreenshotsUrl =
       core.getInput('mirror-screenshots-url') || undefined

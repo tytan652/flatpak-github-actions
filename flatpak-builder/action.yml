@@ -34,6 +34,9 @@ inputs:
   ccache:
     description: "Enable use of ccache in the build (needs ccache in the sdk)"
     default: "false"
+  run-tests:
+    description: "Run modules tests if any"
+    default: "true"
   commit-subject:
     description: "Commit subject to use when exporting the build in the local OSTree repo"
     default: ${{ github.sha && format('Built from {0}', github.sha) }}

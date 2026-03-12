@@ -64,6 +64,7 @@ class Config {
         this.repoDir = core.getInput('repo-dir') || constants_1.defaultRepoDir;
         this.manifestPath = core.getInput('manifest-path', { required: true });
         this.ccache = core.getBooleanInput('ccache', { required: true });
+        this.runTests = core.getBooleanInput('run-tests', { required: true });
         this.commitSubject = core.getInput('commit-subject') || undefined;
         this.mirrorScreenshotsUrl =
             core.getInput('mirror-screenshots-url') || undefined;
@@ -300,6 +301,8 @@ const buildAndFinish = (config) => __awaiter(void 0, void 0, void 0, function* (
         buildArgs.push('--ccache');
     if (config.stopAtModule)
         buildArgs.push(`--stop-at-module=${config.stopAtModule}`);
+    if (!config.runTests)
+        buildArgs.push('--disable-tests');
     commonArgs.push(config.buildDir, config.manifestPath);
     buildArgs.push(...commonArgs);
     yield exec.exec(constants_1.flatpakBuilderCmd, buildArgs);

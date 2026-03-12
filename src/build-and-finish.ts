@@ -20,6 +20,7 @@ class Config implements BuildAndFinishConfig {
 
   ccache: boolean
   stopAtModule: string | undefined
+  runTests: boolean
 
   constructor() {
     this.verbose = core.getBooleanInput('verbose', { required: true })
@@ -31,6 +32,7 @@ class Config implements BuildAndFinishConfig {
     this.manifestPath = core.getInput('manifest-path', { required: true })
     this.ccache = core.getBooleanInput('ccache', { required: true })
     this.stopAtModule = core.getInput('stop-at-module') || undefined
+    this.runTests = core.getBooleanInput('run-tests', { required: true })
   }
 
   generateOutput(): void {

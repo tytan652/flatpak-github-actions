@@ -63,6 +63,7 @@ class Config {
         this.manifestPath = core.getInput('manifest-path', { required: true });
         this.ccache = core.getBooleanInput('ccache', { required: true });
         this.stopAtModule = core.getInput('stop-at-module') || undefined;
+        this.runTests = core.getBooleanInput('run-tests', { required: true });
     }
     generateOutput() {
         core.setOutput('verbose', this.verbose);
@@ -248,6 +249,8 @@ const buildAndFinish = (config) => __awaiter(void 0, void 0, void 0, function* (
         buildArgs.push('--ccache');
     if (config.stopAtModule)
         buildArgs.push(`--stop-at-module=${config.stopAtModule}`);
+    if (!config.runTests)
+        buildArgs.push('--disable-tests');
     commonArgs.push(config.buildDir, config.manifestPath);
     buildArgs.push(...commonArgs);
     yield exec.exec(constants_1.flatpakBuilderCmd, buildArgs);

@@ -16,7 +16,9 @@ This action enabled building and finishing a Flatpak following its manifest
   - It must be on the same filesystem as `state-dir`.
 - `manifest-path` - Path to the Flatpak manifest
 - `ccache` - Enable use of ccache in the build (needs ccache in the sdk)
-- `stop-at-module` - Stop  at  the specified module, ignoring it and all the following ones
+- `stop-at-module` - Stop at the specified module, ignoring it and all the following ones
+- `run-tests` - Run modules tests if any
+  - If tests requires a specific environment (e.g. D-Bus session, Wayland socket), it is up to the action consumer to provide it.
 
 ### Output
 

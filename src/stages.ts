@@ -153,6 +153,7 @@ export interface BuildAndFinishConfig
   extends BranchConfig, BuilderCommonConfig, BuildDirConfig {
   ccache: boolean
   stopAtModule: string | undefined
+  runTests: boolean
 }
 
 export const buildAndFinish = async (
@@ -181,6 +182,8 @@ export const buildAndFinish = async (
 
   if (config.stopAtModule)
     buildArgs.push(`--stop-at-module=${config.stopAtModule}`)
+
+  if (!config.runTests) buildArgs.push('--disable-tests')
 
   commonArgs.push(config.buildDir, config.manifestPath)
   buildArgs.push(...commonArgs)
