@@ -7,13 +7,23 @@ WIP
 ### Difference with v6
 
 - flatpak-builder 1.4.6 or later is required and the requirement can increase through minor version bump of the action
-- D-Bus session and virtual X server are no longer provided while building/testing, it is up to the action consumer to setup the enviroment that the action will run on
+- `repository-name` and `repository-url` are replaced with `remotes`
+  - `remotes` is required since it has no default value
+  - Allows to set multiple Flatpak remote
+- `arch` is now empty by default, its fallback is flatpak auto-detection
+- `branch` is required and no longer fallbacks to `master`
+- `build-dir` defaults now to `builddir`
 - `stop-at-module` is no longer part of the action but is available through the `build-and-finish` step action
+- D-Bus session and virtual X server are no longer provided while building/testing, it is up to the action consumer to setup the enviroment that the action will run on
+- OSTree commit subject can be specified
+- AppStream compose URL policy is not set to full by default
+- `build-bundle` and `bundle` have been refactored to `bundle` and `bundle-name`
+  - It is now assumed that you do not append the name with `.flatpak`, the action will add it itself
 
 ### Input
 
-- `verbose` - Enable verbosity
-- `remotes` - A list of name-URL pairs of Flatpak remotes to add. Members of the pair is separated with a space.
+- `verbose` - `false` - Enable verbosity
+- `remotes` - **required** - A list of name-URL pairs of Flatpak remotes to add. Members of the pair is separated with a space.
   - Their order is took in account when flatpak-builder has to install dependencies (first to last).
   -  If bundle, the first one will be set as its runtime repo.
 
@@ -24,24 +34,25 @@ WIP
     flathub-beta https://flathub.org/beta-repo/flathub-beta.flatpakrepo
     flathub https://flathub.org/repo/flathub.flatpakrepo
   ```
-- `arch` - Specify the machine architecture to build for (e.g. `x86_64`, `aarch64`). If no architecture is specified, the host architecture will be automatically detected.
-- `branch` - Specify the branch to use when exporting the build
+- `arch` - optional - Specify the machine architecture to build for (e.g. `x86_64`, `aarch64`). If no architecture is specified, the host architecture will be automatically detected.
+- `branch` - **required** - Specify the branch to use when exporting the build
   - `test` or `master` are commonly used for test or development builds
-- `state-dir` - Use this directory for storing state (downloads, build dirs, build cache, etc) rather than the internal default (`.flatpak-builder`)
+- `state-dir` - optional - Use this directory for storing state (downloads, build dirs, build cache, etc) rather than the internal default (`.flatpak-builder`)
   - It must be on the same filesystem as `build-dir`.
-- `build-dir` - Use this directory for storing the build rather than the internal default (`builddir`)
+- `build-dir` - optional - Use this directory for storing the build rather than the internal default (`builddir`)
   - It must be on the same filesystem as `state-dir`.
-- `repo-dir` - Use this directory as local OSTree repository rather than the internal default (repo)
-- `manifest-path` - Path to the Flatpak manifest to build
-- `ccache` - Enable use of ccache in the build (needs ccache in the sdk)
-- `run-tests` - Run modules tests if any
+- `repo-dir` - optional - Use this directory as local OSTree repository rather than the internal default (repo)
+- `manifest-path` - **required** - Path to the Flatpak manifest to build
+- `ccache` - `false` - Enable use of ccache in the build (needs ccache in the sdk)
+- `run-tests` - **`true`** - Run modules tests if any
   - If tests requires a specific environment (e.g. D-Bus session, Wayland socket), it is up to the action consumer to provide it.
-- `commit-subject` - Specify the commit subject to use when exporting the build in the local OSTree repo
+- `commit-subject` - optional - Specify the commit subject to use when exporting the build in the local OSTree repo
   - Defaults to `Built from ${{ github.sha }}` if a commit SHA is present in the `github` context
-- `mirror-screenshots-url` - Specify the URL to mirror screenshots
-- `full-compose-url-policy` - Enable the full policy of AppStream compose URL policy (partial being flatpak-builder default). No-op if `mirror-screenshots-url` is not specified.
-- `bundle` -  Generate a bundle with the application
-- `bundle-name` - Name of the bundle, used for the bundle filename. It will be automatically appended with the .flatpak extension. Technically no-op if bundle is set to false.
+- `mirror-screenshots-url` - optional - Specify the URL to mirror screenshots
+- `full-compose-url-policy` - **`false`** - Enable the full policy of AppStream compose URL policy (partial being flatpak-builder default). No-op if `mirror-screenshots-url` is not specified.
+- `bundle` - **`true`** -  Generate a bundle with the application
+- `bundle-name` - optional - Name of the bundle, used for the bundle filename. It will be automatically appended with the .flatpak extension. Technically no-op if bundle is set to false.
+  - Defaults to `'manifest-id'-'arch'` or `'manifest-id'` depending on if `arch` was explicitly set
 
 ### Output
 

@@ -6,8 +6,8 @@ This action enables adding Flatpak repos
 
 ### Input
 
-- `verbose` - Enable verbosity
-- `remotes` - A list of name-URL pairs of Flatpak remotes to add. Members of the pair is separated with a space.
+- `verbose` - `false` - Enable verbosity
+- `remotes` - **required** - A list of name-URL pairs of Flatpak remotes to add. Members of the pair is separated with a space.
 
   Example: 
   ``` yaml

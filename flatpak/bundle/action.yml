@@ -14,7 +14,7 @@ inputs:
     required: true
   repo-dir:
     description: "Use this directory as local OSTree repository"
-    required: false
+    required: true
   is-runtime:
     description: "Enable to export a runtime instead of an application"
     default: "false"
