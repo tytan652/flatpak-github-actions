@@ -201,7 +201,7 @@ const runFlatpakBuilderWithFakeBuildDir = (args, config) => __awaiter(void 0, vo
     if (config.verbose)
         args.push('--verbose');
     if (config.arch)
-        args.push(`--arch${config.arch}`);
+        args.push(`--arch=${config.arch}`);
     args.push(fakeBuildDir, config.manifestPath);
     yield exec.exec(constants_1.flatpakBuilderCmd, args);
     yield io.rmRF(`${config.stateDir}/ccache`);

@@ -108,7 +108,7 @@ const runFlatpakBuilderWithFakeBuildDir = async (
 
   if (config.verbose) args.push('--verbose')
 
-  if (config.arch) args.push(`--arch${config.arch}`)
+  if (config.arch) args.push(`--arch=${config.arch}`)
 
   // NOTE: Build dir is required but is not created
   args.push(fakeBuildDir, config.manifestPath)
