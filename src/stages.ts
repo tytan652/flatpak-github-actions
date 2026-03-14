@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
+import * as glob from '@actions/glob'
 import * as io from '@actions/io'
 
 import * as semver from 'semver'
@@ -103,6 +104,11 @@ const runFlatpakBuilderWithFakeBuildDir = async (
   config: BuilderCommonConfig
 ): Promise<void> => {
   const fakeBuildDir = `${config.stateDir}/${defaultBuildDir}`
+  const ccacheDir = `${config.stateDir}/ccache`
+
+  // Glob expression to check for an already existing ccache directory
+  const globber = await glob.create([ccacheDir, `!${ccacheDir}/*`].join('\n'))
+  const files = await globber.glob()
 
   args.push('--assumeyes', `--state-dir=${config.stateDir}`)
 
@@ -115,8 +121,8 @@ const runFlatpakBuilderWithFakeBuildDir = async (
 
   await exec.exec(flatpakBuilderCmd, args)
 
-  // Remove ccache state
-  await io.rmRF(`${config.stateDir}/ccache`)
+  // Remove ccache state if non-existant beforehand
+  if (!files.some(file => file.endsWith(ccacheDir))) await io.rmRF(ccacheDir)
 
   // Remove non-existant build dir just in case
   await io.rmRF(fakeBuildDir)

@@ -41,6 +41,7 @@ jobs:
         uses: ./.github/actions/test-check-state-dir
         with:
           state-dir: ${{ steps.install_deps.outputs.state-dir }}
+          ccache-exist: false
 
       - name: Download sources
         id: download_sources
@@ -55,6 +56,7 @@ jobs:
         uses: ./.github/actions/test-check-state-dir
         with:
           state-dir: ${{ steps.download_sources.outputs.state-dir }}
+          ccache-exist: false
 
       - name: Build and finish
         id: build_and_finish
@@ -65,6 +67,21 @@ jobs:
           branch: ${{ env.BRANCH }}
           state-dir: ${{ steps.download_sources.outputs.state-dir }}
           manifest-path: ${{ steps.download_sources.outputs.manifest-path }}
+
+      - name: Re-download sources (ccache check)
+        id: re_download_sources
+        uses: ./flatpak-builder/download-sources
+        with:
+          verbose: false
+          arch: ${{ steps.build_and_finish.outputs.arch }}
+          state-dir: ${{ steps.build_and_finish.outputs.state-dir }}
+          manifest-path: ${{ steps.build_and_finish.outputs.manifest-path }}
+
+      - name: Check state directory (${{ steps.re_download_sources.outputs.state-dir }})
+        uses: ./.github/actions/test-check-state-dir
+        with:
+          state-dir: ${{ steps.re_download_sources.outputs.state-dir }}
+          ccache-exist: true
       
       - name: Export build
         id: export_build

@@ -4,6 +4,9 @@ inputs:
   state-dir:
     description: "Directory to check"
     required: true
+  ccache-exist:
+    description: If false, fails if it exist. If true, fails if it does not.
+    default: "false"
 runs:
   using: composite
   steps:
@@ -16,8 +19,8 @@ runs:
 
         echo "::group::Assertion tests"
         echo "::info::Check for ccache directory"
-        if [[ -d '${{ inputs.state-dir }}/ccache' ]]; then
-          echo "::error::State directory has a ccache directory which should not be"
+        if ${{ fromJSON(inputs.ccache-exist) && '! ' || '' }}[[ -d '${{ inputs.state-dir }}/ccache' ]]; then
+          echo "::error::State directory has ${{ fromJSON(inputs.ccache-exist) && 'no' || 'a' }} ccache directory which should not be the case"
           exit 2
         fi
         echo "::endgroup::"
