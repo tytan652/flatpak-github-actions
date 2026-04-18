@@ -130,7 +130,10 @@ class Config
 const run = async (): Promise<void> => {
   const config = new Config()
 
-  await stages.checkPrerequisites(config)
+  await stages.checkPrerequisites(config, {
+    flatpak: true,
+    flatpakBuilder: true
+  })
 
   if (config.remotes) {
     await core.group('Add remotes', async () => {

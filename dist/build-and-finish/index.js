@@ -77,7 +77,10 @@ class Config {
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     const config = new Config();
     const manifest = utils.parseManifest(config.manifestPath);
-    yield stages.checkPrerequisites(config);
+    yield stages.checkPrerequisites(config, {
+        flatpak: true,
+        flatpakBuilder: true
+    });
     utils.checkManifestBranch(manifest, config.branch);
     yield stages.buildAndFinish(config);
     config.generateOutput();
@@ -95,13 +98,15 @@ run().catch((e) => {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.flatpakBuilderMinVersion = exports.defaultRepoDir = exports.defaultBuildDir = exports.defaultStateDir = exports.flatpakCmd = exports.flatpakBuilderCmd = void 0;
+exports.flatManagerClientMinVersion = exports.flatpakBuilderMinVersion = exports.defaultRepoDir = exports.defaultBuildDir = exports.defaultStateDir = exports.flatManagerClientCmd = exports.flatpakCmd = exports.flatpakBuilderCmd = void 0;
 exports.flatpakBuilderCmd = 'flatpak-builder';
 exports.flatpakCmd = 'flatpak';
+exports.flatManagerClientCmd = 'flat-manager-client';
 exports.defaultStateDir = '.flatpak-builder';
 exports.defaultBuildDir = 'builddir';
 exports.defaultRepoDir = 'repo';
 exports.flatpakBuilderMinVersion = '1.4.6';
+exports.flatManagerClientMinVersion = '0.5.1';
 
 
 /***/ }),
@@ -154,7 +159,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.bundle = exports.bundleFilenameFromName = exports.exportBuild = exports.buildAndFinish = exports.downloadSources = exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = void 0;
+exports.bundle = exports.bundleFilenameFromName = exports.exportBuild = exports.buildAndFinish = exports.downloadSources = exports.installDependencies = exports.addRemotes = exports.Remotes = exports.checkPrerequisites = exports.CheckPrerequisitesOptions = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const exec = __importStar(__nccwpck_require__(5236));
 const glob = __importStar(__nccwpck_require__(7206));
@@ -171,13 +176,31 @@ const checkFlatpakBuilder = (config) => __awaiter(void 0, void 0, void 0, functi
     if (semver.lt(version, constants_1.flatpakBuilderMinVersion))
         throw Error(`flatpak-builder ${constants_1.flatpakBuilderMinVersion} or later is required, found ${version}`);
 });
-const checkPrerequisites = (config_1, ...args_1) => __awaiter(void 0, [config_1, ...args_1], void 0, function* (config, flatpakCmdOnly = false) {
+const checkFlatManagerClient = (config) => __awaiter(void 0, void 0, void 0, function* () {
+    const versionExec = yield exec.getExecOutput(constants_1.flatManagerClientCmd, ['--version'], { silent: !config.verbose });
+    if (versionExec.exitCode)
+        throw Error('Failed to retrive flat-manager-client version');
+    const version = versionExec.stdout
+        .replace(/^flat-manager-client\s/, '')
+        .trim();
+    if (!semver.valid(version))
+        throw Error(`flat-manager-client version is not a valid semver: ${version}`);
+    if (semver.lt(version, constants_1.flatManagerClientMinVersion))
+        throw Error(`flat-manager-client ${constants_1.flatManagerClientMinVersion} or later is required, found ${version}`);
+});
+class CheckPrerequisitesOptions {
+}
+exports.CheckPrerequisitesOptions = CheckPrerequisitesOptions;
+const checkPrerequisites = (config, options) => __awaiter(void 0, void 0, void 0, function* () {
     if (config.verbose)
         core.startGroup('Check pre-requisites');
-    if (yield exec.exec(constants_1.flatpakCmd, ['--version'], { silent: !config.verbose }))
+    if (options.flatpak &&
+        (yield exec.exec(constants_1.flatpakCmd, ['--version'], { silent: !config.verbose })))
         throw Error('Failed to retrieve flatpak version');
-    if (!flatpakCmdOnly)
+    if (options.flatpakBuilder)
         yield checkFlatpakBuilder(config);
+    if (options.flatManagerClient)
+        yield checkFlatManagerClient(config);
     if (config.verbose)
         core.endGroup();
 });

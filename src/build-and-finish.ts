@@ -54,7 +54,10 @@ const run = async (): Promise<void> => {
   const config = new Config()
   const manifest = utils.parseManifest(config.manifestPath)
 
-  await stages.checkPrerequisites(config)
+  await stages.checkPrerequisites(config, {
+    flatpak: true,
+    flatpakBuilder: true
+  })
 
   utils.checkManifestBranch(manifest, config.branch)
 

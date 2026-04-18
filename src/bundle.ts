@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 
 import * as stages from './stages'
-import { BundleConfig } from './stages'
+import { BundleConfig, CheckPrerequisitesOptions } from './stages'
 
 class Config implements BundleConfig {
   verbose: boolean
@@ -40,7 +40,7 @@ class Config implements BundleConfig {
 const run = async (): Promise<void> => {
   const config = new Config()
 
-  await stages.checkPrerequisites(config, true)
+  await stages.checkPrerequisites(config, { flatpak: true })
 
   await stages.bundle(config)
 

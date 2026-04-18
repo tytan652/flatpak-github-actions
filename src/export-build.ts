@@ -62,7 +62,10 @@ class Config implements ExportBuildConfig {
 const run = async (): Promise<void> => {
   const config = new Config()
 
-  await stages.checkPrerequisites(config)
+  await stages.checkPrerequisites(config, {
+    flatpak: true,
+    flatpakBuilder: true
+  })
 
   await stages.exportBuild(config)
 

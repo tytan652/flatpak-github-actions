@@ -7,6 +7,8 @@ import * as semver from 'semver'
 
 import {
   defaultBuildDir,
+  flatManagerClientCmd,
+  flatManagerClientMinVersion,
   flatpakBuilderCmd,
   flatpakBuilderMinVersion,
   flatpakCmd
@@ -57,16 +59,49 @@ const checkFlatpakBuilder = async (config: VerboseConfig): Promise<void> => {
     )
 }
 
+const checkFlatManagerClient = async (config: VerboseConfig): Promise<void> => {
+  const versionExec = await exec.getExecOutput(
+    flatManagerClientCmd,
+    ['--version'],
+    { silent: !config.verbose }
+  )
+
+  if (versionExec.exitCode)
+    throw Error('Failed to retrive flat-manager-client version')
+
+  const version = versionExec.stdout
+    .replace(/^flat-manager-client\s/, '')
+    .trim()
+  if (!semver.valid(version))
+    throw Error(`flat-manager-client version is not a valid semver: ${version}`)
+
+  if (semver.lt(version, flatManagerClientMinVersion))
+    throw Error(
+      `flat-manager-client ${flatManagerClientMinVersion} or later is required, found ${version}`
+    )
+}
+
+export class CheckPrerequisitesOptions {
+  flatpak?: boolean
+  flatpakBuilder?: boolean
+  flatManagerClient?: boolean
+}
+
 export const checkPrerequisites = async (
   config: VerboseConfig,
-  flatpakCmdOnly: boolean = false
+  options: CheckPrerequisitesOptions
 ): Promise<void> => {
   if (config.verbose) core.startGroup('Check pre-requisites')
 
-  if (await exec.exec(flatpakCmd, ['--version'], { silent: !config.verbose }))
+  if (
+    options.flatpak &&
+    (await exec.exec(flatpakCmd, ['--version'], { silent: !config.verbose }))
+  )
     throw Error('Failed to retrieve flatpak version')
 
-  if (!flatpakCmdOnly) await checkFlatpakBuilder(config)
+  if (options.flatpakBuilder) await checkFlatpakBuilder(config)
+
+  if (options.flatManagerClient) await checkFlatManagerClient(config)
 
   if (config.verbose) core.endGroup()
 }

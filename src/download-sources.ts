@@ -36,7 +36,7 @@ class Config implements DownloadSourcesConfig {
 const run = async (): Promise<void> => {
   const config = new Config()
 
-  await stages.checkPrerequisites(config)
+  await stages.checkPrerequisites(config, { flatpakBuilder: true })
 
   await stages.downloadSources(config)
 
