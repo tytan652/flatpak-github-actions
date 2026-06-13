@@ -124,3 +124,66 @@ jobs:
           commit-subject: ${{ env.COMMIT_SUBJECT }}
           mirror-screenshots-url: ${{ env.MIRROR_SCREENSHOTS_URL }}
           bundle-name: ${{ env.BUNDLE_NAME }}
+
+  flat-manager:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: docker.io/library/postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+      
+      flat-manager:
+        image: "ghcr.io/flatpak/flat-manager:latest"
+        env:
+          DATABASE_URL: postgres://postgres:postgres@postgres/test_db
+          REPO_CONFIG: /etc/flat-manager-config.json
+        ports:
+          - 8080:8080
+        command: >-
+          sh -c
+          echo
+          '{
+            "repos": {
+              "stable": {
+                "path": "repo",
+                "collection-id": "org.test.Stable",
+                "suggested-repo-name": "flatpak-github-actions-test",
+                "runtime-repo-url": "https://dl.flathub.org/repo/flathub.flatpakrepo",
+                "gpg-key": null,
+                "base-url": null,
+                "subsets": {
+                  "all": {
+                    "collection-id": "org.test.Stable",
+                    "base-url": null
+                  }
+                }
+              },
+              "port": 8080,
+              "delay-update-secs": 10,
+              "database-url": "postgres://postgres:postgres@postgres/test_db",
+              "build-repo-base": "build-repo",
+              "build-gpg-key": null,
+              "gpg-homedir": null,
+              "secret": "test_secret"
+            }
+          }' > /etc/flat-manager-config.json;
+          sleep 5;
+          /usr/local/bin/flat-manager
+
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08
+      options: --privileged
+    steps:
+      - run: |
+          flatpak remote-add flat-manager http://127.0.0.1:8080/repo/stable
+
+      - run: |
+          flat-manager-client gentoken --secret=test_secret --repo=stable --scope=tokenmanagement
+      
+      - run: |
+          flat-manager-client --help
