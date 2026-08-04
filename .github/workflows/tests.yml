@@ -144,13 +144,14 @@ jobs:
 
       - name: Create flat-manager instance
         id: manager
+        background: true
         working-directory: ./.github/flat-manager
         env:
           DATABASE_URL: postgres://postgres:postgres@db/test_db
         run: |
           mkdir build-repo
           ostree --repo=repo init --mode=archive-z2
-          (flat-manager 2>&1 | tee ./flat-manager.log) &
+          flat-manager 2>&1 | tee ./flat-manager.log
 
       - run: |
           flat-manager-client --print-output gentoken --secret=secret --repo=stable
@@ -162,6 +163,9 @@ jobs:
       
       - run: |
           flat-manager-client --help
+
+      - name: Stop flat-manager instance
+        cancel: manager
 
       - name: Print flat-manager instance log
         if: ${{ steps.manager.conclusion == 'success' && (success() || failure()) }}
