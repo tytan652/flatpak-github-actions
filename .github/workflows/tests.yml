@@ -124,3 +124,47 @@ jobs:
           commit-subject: ${{ env.COMMIT_SUBJECT }}
           mirror-screenshots-url: ${{ env.MIRROR_SCREENSHOTS_URL }}
           bundle-name: ${{ env.BUNDLE_NAME }}
+
+  flat-manager:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: docker.io/library/postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+
+    container:
+      image: ghcr.io/flatpak/flat-manager:latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Create flat-manager instance
+        id: manager
+        working-directory: ./.github/flat-manager
+        env:
+          DATABASE_URL: postgres://postgres:postgres@db/test_db
+        run: |
+          mkdir build-repo
+          ostree --repo=repo init --mode=archive-z2
+          (flat-manager 2>&1 | tee ./flat-manager.log) &
+
+      - run: |
+          flat-manager-client --print-output gentoken --secret=secret --repo=stable
+
+      - run: |
+          echo "REPO_TOKEN=$(flat-manager-client gentoken --secret=secret --repo=stable)" | tee -a $GITHUB_ENV
+      - run: |
+          flat-manager-client --print-output create http://127.0.0.1:8080 stable
+      
+      - run: |
+          flat-manager-client --help
+
+      - name: Print flat-manager instance log
+        if: ${{ steps.manager.conclusion == 'success' && (success() || failure()) }}
+        working-directory: ./.github/flat-manager
+        run: |
+          cat ./flat-manager.log
